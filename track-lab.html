@@ -1,0 +1,3259 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="查看各盘口的同位置候选映射、历史 ROI 和模拟账本。">
+  <meta name="theme-color" content="#10191d">
+  <title>赛道数据台 · 赛车历史回测</title>
+  <style>:root {
+  color-scheme: dark;
+  --canvas: #10181c;
+  --panel: #172228;
+  --raised: #1e2c33;
+  --line: #304047;
+  --text: #f3f8fa;
+  --muted: #a7bac3;
+  --accent: #b7f57a;
+  --negative: #ff9d9d;
+  --qualified: #22342b;
+  font-family: "Geist", Inter, "Microsoft YaHei UI", "PingFang SC", system-ui, sans-serif;
+  font-synthesis: none;
+  font-variant-numeric: tabular-nums;
+  background: var(--canvas);
+  color: var(--text);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+p, h1, h2, h3 { margin: 0; }
+[hidden] { display: none !important; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.layout { width: min(1370px, calc(100% - 88px)); margin-inline: auto; }
+.game-nav { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 8px; margin-top: 17px; }
+.game-nav .game-list { display: flex; flex-wrap: wrap; flex: 0 1 auto; max-width: 100%; }
+.game-nav .game-list button { padding-inline: 13px; }
+.game-presets { display: grid; gap: 8px; margin-top: 16px; }
+.game-preset { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px; width: 100%; text-align: left; color: var(--text); background: var(--raised); border: 1px solid var(--line); border-radius: 7px; }
+.game-preset:hover:not(:disabled) { border-color: var(--accent); }
+.game-preset > span { color: var(--muted); font-size: 12px; }
+.game-preset:disabled { opacity: .55; cursor: default; }
+.site-header { border-bottom: 1px solid #29373e; background: #131e23; }
+.header-inner { display: flex; justify-content: space-between; align-items: center; min-height: 68px; gap: 14px; }
+.brand, .header-actions { display: flex; align-items: center; gap: 13px; }
+.brand { font-size: 17px; font-weight: 750; letter-spacing: .035em; white-space: nowrap; }
+.brand-mark {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  border-radius: 8px;
+  background: var(--accent);
+}
+.brand-mark::before, .brand-mark::after {
+  content: "";
+  position: absolute;
+  transform: skew(-29deg);
+  width: 4px;
+  height: 16px;
+  top: 10px;
+  background: #182715;
+}
+.brand-mark::before { left: 12px; }
+.brand-mark::after { left: 20px; height: 11px; }
+.source-tag {
+  color: #e4c78e;
+  background: #302b21;
+  border: 1px solid #54462e;
+  padding: 5px 9px;
+  border-radius: 5px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.button {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  min-height: 37px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+.primary { background: var(--accent); color: #172517; }
+.primary:hover { background: #d0ffa8; }
+.secondary { background: #293941; color: var(--text); border-color: #40535c; }
+.secondary:hover { background: #364953; }
+.danger-outline { color: var(--negative); border-color: #69454b; background: transparent; }
+.danger-outline:hover { background: #3d292e; }
+.danger-solid { color: #341a1c; background: var(--negative); }
+.danger-solid:hover { background: #ffb5b5; }
+.danger-outline:disabled { opacity: .5; cursor: default; }
+.text-button, .icon-button { border: 0; background: transparent; padding: 0; color: var(--accent); }
+.text-button:hover { text-decoration: underline; }
+.icon-button { width: 32px; height: 32px; font-size: 24px; border-radius: 5px; color: var(--muted); }
+.icon-button:hover { background: var(--raised); color: var(--text); }
+
+.overview { display: flex; justify-content: space-between; align-items: end; gap: 30px; padding: 36px 0 26px; }
+.intro h1 { font-size: clamp(34px, 4vw, 56px); line-height: 1.16; letter-spacing: -.055em; font-weight: 790; }
+.intro p { margin-top: 11px; color: var(--muted); font-size: 14px; line-height: 1.65; }
+.hero-stats { display: flex; padding: 4px 0; }
+.hero-stats > div { border-left: 1px solid #3b4c52; min-width: 125px; padding: 0 17px; }
+.hero-stats > div:last-child { padding-right: 0; }
+.hero-stats span { display: block; margin-bottom: 5px; font-size: 12px; color: var(--muted); }
+.hero-stats strong { font-size: 28px; line-height: 1.2; letter-spacing: -.04em; }
+.hero-stats > div:last-child strong.positive { color: var(--accent); }
+.hero-stats > div:last-child strong.negative { color: var(--negative); }
+
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+.results { display: flex; align-items: center; padding: 16px 20px; gap: 24px; }
+.results-meta { flex: 0 0 142px; min-width: 0; }
+.results-meta h2, .settings-title h2 { font-size: 13px; color: var(--muted); font-weight: 650; }
+.issue { margin-top: 3px; font-size: 20px; font-weight: 720; overflow-wrap: anywhere; }
+.data-label { margin-top: 4px; font-size: 11px; color: var(--muted); overflow-wrap: anywhere; }
+.draw-time { margin-top: 3px; color: var(--muted); font-size: 11px; white-space: nowrap; }
+.results-grid { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 8px; flex: 1; }
+.results-grid[data-positions="5"] { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.result-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 65px;
+  border: 1px solid #34474e;
+  border-radius: 7px;
+  background: linear-gradient(165deg, #24353d, #1b282e);
+}
+.result-cell > span { font-size: 11px; color: var(--muted); }
+.result-cell > strong { font-size: 24px; line-height: 1; }
+.result-cell:first-child { border-color: #597448; background: linear-gradient(165deg, #2e432e, #22342b); }
+.result-cell:first-child strong { color: var(--accent); }
+
+.settings { margin: 14px 0 18px; padding: 12px 20px; display: flex; align-items: end; gap: 20px; }
+.settings-title { flex: 0 0 142px; align-self: center; }
+.settings form { display: flex; align-items: end; gap: 12px; flex: 1; }
+.settings label { display: grid; gap: 5px; font-size: 12px; color: var(--muted); flex: 1; min-width: 0; }
+.settings label > span { display: flex; align-items: center; min-height: 37px; border-radius: 6px; border: 1px solid #3a4d56; background: #131e24; }
+.settings label > span > span { padding-right: 9px; white-space: nowrap; }
+.settings input { min-width: 0; width: 100%; padding: 7px 8px; background: transparent; border: 0; color: var(--text); font-size: 14px; }
+#settings-error { color: var(--negative); font-size: 11px; margin-top: 4px; }
+
+.analysis-grid { display: grid; grid-template-columns: minmax(0, 1.43fr) minmax(350px, 1fr); gap: 16px; align-items: start; }
+.analysis-panel { overflow: hidden; }
+.panel-heading { padding: 19px 18px 16px; min-height: 80px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.panel-heading h2, .dialog-header h2 { font-size: 19px; font-weight: 780; letter-spacing: -.025em; }
+.panel-heading p, .dialog-header p { color: var(--muted); font-size: 12px; line-height: 1.5; margin-top: 4px; }
+.window-tabs { display: flex; border: 1px solid #394a53; background: #101a20; border-radius: 8px; padding: 3px; gap: 2px; flex: 0 0 auto; }
+.window-tabs button {
+  min-height: 32px;
+  white-space: nowrap;
+  border: 0;
+  padding: 5px 8px;
+  background: transparent;
+  border-radius: 5px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.window-tabs button:hover { color: var(--text); background: #26373e; }
+.window-tabs button[aria-pressed="true"] { color: var(--accent); background: #2a3d2d; font-weight: 700; }
+.table-scroll { overflow-x: auto; }
+.table-scroll:focus-visible { outline-offset: -2px; }
+table { width: 100%; border-collapse: collapse; white-space: nowrap; }
+th, td { text-align: right; padding: 0 10px; height: 41px; border-top: 1px solid #2b3b43; }
+th:first-child, td:first-child { text-align: left; padding-left: 18px; }
+th:last-child, td:last-child { padding-right: 18px; }
+th, .map-labels { font-size: 11px; color: var(--muted); font-weight: 650; background: #1d2b33; }
+td { font-size: 13px; }
+tr.qualified, .mapping-row.qualified { background: var(--qualified); }
+tbody tr:not(.qualified):hover, .mapping-row:not(.qualified):hover { background: #2a3a41; }
+.ratio, .positive, .negative { font-weight: 700; }
+.positive { color: var(--accent); }
+.negative { color: var(--negative); }
+.row-button { color: var(--text); padding: 0; border: 0; border-radius: 5px; background: transparent; }
+.track-number {
+  display: inline-grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 6px;
+  background: #2b3d46;
+  border: 1px solid #41535c;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 750;
+}
+.qualified .track-number { color: var(--accent); background: #2f4230; border-color: #507347; }
+.map-labels, .mapping-row { display: grid; grid-template-columns: 61px minmax(0, 1fr) minmax(45px, auto); gap: 7px; align-items: center; }
+.map-labels { padding: 0 16px; height: 41px; border-top: 1px solid #2b3b43; }
+.map-labels > :last-child { text-align: right; }
+.mapping-row {
+  width: 100%;
+  min-height: 41px;
+  padding: 5px 16px;
+  text-align: left;
+  color: var(--text);
+  background: transparent;
+  border: 0;
+  border-top: 1px solid #2b3b43;
+}
+.candidate-list { display: flex; flex-wrap: wrap; gap: 4px; min-width: 0; align-items: center; }
+.candidate { display: inline-grid; place-items: center; border-radius: 50%; width: 23px; height: 23px; font-size: 11px; color: #d0e7ec; background: #24373e; border: 1px solid #49626a; }
+.qualified .candidate { color: #d5f7c7; border-color: #506d4a; background: #2c4130; }
+.position-tag { font-size: 12px; justify-self: end; color: var(--muted); max-width: 95px; text-align: right; overflow-wrap: anywhere; }
+.legend-dot { display: inline-block; vertical-align: 1px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.table-note { padding: 12px 18px; border-top: 1px solid #2b3b43; color: var(--muted); font-size: 11px; line-height: 1.5; }
+.detail-panel { border-top: 1px solid #435b56; background: #131f24; padding: 12px 16px 16px; }
+.detail-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.detail-heading h3 { font-size: 14px; }
+.history-labels, .history-row { display: grid; grid-template-columns: minmax(0, 1fr) 65px 65px; align-items: center; gap: 6px; padding: 7px 0; font-size: 12px; }
+.history-labels { color: var(--muted); }
+.history-row { border-top: 1px solid #304148; overflow-wrap: anywhere; }
+.history-row > :last-child { color: var(--accent); }
+.combo-jump { display: inline-block; margin-top: 9px; font-size: 13px; }
+.combo-panel { margin-top: 16px; overflow: hidden; scroll-margin-top: 12px; }
+.combo-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.combo-controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 18px; padding: 0 18px 14px; }
+.combo-stake-form { display: flex; flex-wrap: wrap; align-items: end; gap: 7px 10px; max-width: 100%; color: var(--muted); font-size: 12px; }
+.combo-stake-form label { display: grid; gap: 4px; min-width: 0; }
+.combo-stake-field, .combo-stake-form select { height: 37px; border: 1px solid #3e5058; border-radius: 7px; background: #142027; }
+.combo-stake-field { display: flex; width: 112px; align-items: center; }
+.combo-stake-field input { min-width: 0; width: 100%; height: 35px; padding: 0 8px; border: 0; border-radius: 7px; color: var(--text); background: transparent; font: inherit; font-size: 13px; }
+.combo-stake-form select { min-width: 0; padding: 0 8px; color: var(--text); font-size: 13px; }
+.combo-stake-field > span { padding-inline-end: 9px; }
+#combo-stake-error { flex-basis: 100%; color: var(--negative); }
+.combo-context { padding: 0 18px 14px; display: grid; gap: 4px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.combo-context p:empty { display: none; }
+.combo-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+  gap: 1px;
+  border-top: 1px solid var(--line);
+  background: var(--line);
+}
+.combo-metric { display: flex; padding: 12px 14px; gap: 5px; flex-direction: column; min-width: 0; background: #1b2930; }
+.combo-metric > span { font-size: 11px; color: var(--muted); }
+.combo-metric > strong { font-size: 17px; overflow-wrap: anywhere; }
+.combo-list-heading, .combo-row > summary {
+  display: grid;
+  grid-template-columns: minmax(68px, 1fr) minmax(83px, 1fr) repeat(3, minmax(65px, 1fr)) 12px;
+  gap: 8px;
+  align-items: center;
+  padding: 9px 18px;
+  border-top: 1px solid #304047;
+}
+.combo-list-heading { background: #1d2b33; color: var(--muted); font-size: 11px; }
+.combo-list-heading > :nth-child(n+3), .combo-row > summary > :nth-child(n+3) { text-align: right; }
+.combo-row > summary { list-style: none; min-height: 39px; cursor: pointer; font-size: 13px; overflow-wrap: anywhere; }
+.combo-row > summary::-webkit-details-marker { display: none; }
+.combo-row > summary::after { content: "+"; justify-self: center; color: var(--muted); }
+.combo-row[open] > summary::after { content: "−"; }
+.combo-row > summary:hover, .combo-row[open] > summary { background: #23343c; }
+.combo-row > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.combo-outcome { color: var(--muted); }
+.combo-outcome[data-status="hit"] { color: var(--accent); }
+.combo-outcome[data-status="miss"] { color: var(--negative); }
+.combo-outcome[data-status="pending"] { color: #edd19c; }
+.combo-detail { padding: 9px 18px 13px; border-top: 1px solid #304047; background: #142027; color: var(--muted); font-size: 12px; line-height: 1.65; overflow-x: auto; }
+.combo-detail > p, .combo-detail > ul { margin-block: 4px; }
+.combo-detail > ul { padding-inline-start: 17px; }
+.combo-pick { display: grid; grid-template-columns: 48px 69px minmax(0, 1fr) minmax(50px, auto); align-items: center; gap: 8px; max-width: 490px; padding: 5px 0; border-top: 1px solid #2b3d46; }
+.combo-pick > strong { color: var(--text); }
+.combo-empty { padding: 15px 18px; border-top: 1px solid #304047; color: var(--muted); font-size: 13px; }
+.combo-more-wrap:has(button:not([hidden])) { display: flex; padding: 12px 18px; border-top: 1px solid #304047; justify-content: center; }
+.footer { display: flex; justify-content: space-between; align-items: start; gap: 16px; padding: 15px 0 30px; color: var(--muted); line-height: 1.5; font-size: 12px; }
+.footer button { flex-shrink: 0; }
+
+dialog { width: min(540px, calc(100% - 32px)); background: var(--panel); color: var(--text); border: 1px solid #405760; border-radius: 14px; padding: 22px; }
+dialog::backdrop { background: #03090bd9; }
+.dialog-header, .paste-heading, .dialog-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.file-picker { display: grid; gap: 8px; margin: 20px 0 16px; color: var(--muted); font-size: 13px; }
+.file-picker input { color: var(--text); max-width: 100%; }
+.file-picker input::file-selector-button { background: var(--raised); color: var(--text); border: 1px solid #405760; border-radius: 5px; padding: 5px 9px; margin-right: 8px; }
+.paste-heading { color: var(--muted); font-size: 13px; margin-bottom: 7px; }
+textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-radius: 6px; width: 100%; color: var(--text); background: var(--canvas); font-family: "IBM Plex Mono", Consolas, monospace; font-size: 12px; }
+.privacy-note, .input-error { margin-top: 10px; color: var(--muted); line-height: 1.6; font-size: 12px; }
+.input-error { color: var(--negative); }
+.dialog-footer { justify-content: flex-end; margin-top: 15px; }
+
+@media (max-width: 1100px) {
+  .layout { width: calc(100% - 48px); }
+  .analysis-grid { grid-template-columns: minmax(0, 1.4fr) minmax(295px, 1fr); }
+  .panel-heading { flex-wrap: wrap; }
+  .settings { gap: 12px; }
+  .settings-title { flex-basis: auto; }
+}
+@media (max-width: 790px) {
+  .analysis-grid { grid-template-columns: minmax(0, 1fr); }
+  .overview { display: block; padding-top: 26px; }
+  .hero-stats { margin-top: 21px; }
+  .hero-stats > div { min-width: 0; flex: 1; padding: 0 12px; }
+  .hero-stats strong { font-size: 23px; }
+  .results { display: block; }
+  .results-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 9px; }
+  .issue, .data-label, .draw-time { margin-top: 0; }
+  .settings { display: block; }
+  .settings form { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 9px; }
+  .settings form .button { grid-column: 1 / -1; }
+}
+@media (max-width: 520px) {
+  .layout { width: calc(100% - 26px); }
+  .header-inner { min-height: 59px; }
+  .brand, .header-actions { gap: 7px; }
+  .brand { font-size: 14px; }
+  .source-tag { padding-inline: 5px; font-size: 10px; }
+  .header-actions .button { padding-inline: 8px; font-size: 12px; }
+  .header-actions .source-tag { display: none; }
+  .results, .settings { padding-inline: 12px; }
+  .results-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; }
+  .result-cell { min-height: 49px; gap: 4px; }
+  .result-cell strong { font-size: 20px; }
+  .settings form { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+  .panel-heading { padding: 12px; }
+  th, td { padding-inline: 5px; font-size: 11px; }
+  th:first-child, td:first-child { padding-left: 8px; }
+  th:last-child, td:last-child { padding-right: 8px; }
+  .map-labels, .mapping-row { grid-template-columns: 43px minmax(0, 1fr) minmax(39px, auto); padding-inline: 12px; }
+  .candidate { width: 22px; height: 22px; }
+  .combo-context, .combo-controls, .combo-detail { padding-inline: 10px; }
+  .combo-stake-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; }
+  .combo-stake-field, .combo-stake-form select { width: 100%; }
+  .combo-stake-form > .button, #combo-stake-error { grid-column: 1 / -1; }
+  .combo-summary { grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); }
+  .combo-list-heading, .combo-row > summary {
+    grid-template-columns: minmax(50px, .9fr) minmax(53px, 1fr) repeat(3, minmax(43px, 1fr)) 9px;
+    gap: 4px;
+    padding-inline: 9px;
+    font-size: 11px;
+  }
+  .combo-pick { grid-template-columns: 44px 59px minmax(0, 1fr) minmax(50px, auto); gap: 4px; }
+}
+</style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="layout header-inner">
+      <a href="#" class="brand" aria-label="赛道数据台首页"><span class="brand-mark" aria-hidden="true"></span>赛道数据台</a>
+      <div class="header-actions">
+        <span class="source-tag" id="sample-tag">演示数据</span>
+        <button class="button secondary" type="button" id="live-toggle">连接实时</button>
+        <button class="button primary" type="button" id="import-open"><span aria-hidden="true">↑</span> 导入开奖</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <nav class="game-nav" aria-label="已添加的盘口">
+      <div class="window-tabs game-list" id="game-list" role="group" aria-label="选择盘口"></div>
+      <button class="button secondary" id="game-add" type="button" aria-haspopup="dialog"><span aria-hidden="true">＋</span>添加盘口</button>
+    </nav>
+    <section class="overview" aria-labelledby="page-title">
+      <div class="intro">
+        <h1 id="page-title">极速赛车</h1>
+        <p id="live-status" role="status">正在准备开奖数据…</p>
+        <a class="text-button combo-jump" href="#combo-panel">查看组合统计 ↓</a>
+      </div>
+
+      <div class="hero-stats" aria-label="当前数据和回测概况">
+        <div><span>已载入期数</span><strong id="data-count">—</strong></div>
+        <div><span>达标追踪号</span><strong id="qualified-count">—</strong></div>
+        <div><span>窗口最高 ROI</span><strong id="best-roi">—</strong></div>
+      </div>
+    </section>
+
+    <section class="results panel" aria-labelledby="results-title">
+      <div class="results-meta">
+        <h2 id="results-title">最新一期</h2>
+        <div class="issue" id="latest-id">—</div>
+        <div class="data-label" id="data-source">演示数据</div>
+        <div class="draw-time" id="draw-time" hidden></div>
+      </div>
+      <div class="results-grid" id="latest-results" aria-label="最新一期各位置开奖号码"></div>
+    </section>
+
+    <section class="settings panel" aria-labelledby="settings-title">
+      <div class="settings-title">
+        <h2 id="settings-title">回测参数</h2>
+        <p id="settings-error" role="alert" hidden></p>
+      </div>
+      <form id="settings-form">
+        <label for="lookback">回看期数<span><input type="number" id="lookback" min="2" max="100" value="7" required><span>期</span></span></label>
+        <label for="stake">单号投入<span><input type="number" id="stake" min="0.01" max="1000000" step="0.01" value="50" required><span>元</span></span></label>
+        <label for="odds">本盘模拟返还<span><input type="number" id="odds" min="0.01" max="10000" step="0.01" value="9.93" required><span>倍</span></span></label>
+        <label for="threshold">ROI 下限<span><input type="number" id="threshold" min="-100" max="10000" step="0.1" value="10" required><span>%</span></span></label>
+        <label for="threshold-max">ROI 上限<span><input type="number" id="threshold-max" min="-100" max="10000" step="0.1" placeholder="不限"><span>%</span></span></label>
+        <label for="max-candidates-per-position">单车位候选号上限<span><input type="number" id="max-candidates-per-position" min="1" max="10" step="1" value="3" required><span>个</span></span></label>
+        <button class="button secondary" type="submit">应用参数</button>
+      </form>
+    </section>
+
+    <div class="analysis-grid">
+      <section class="panel analysis-panel" aria-labelledby="roi-title">
+        <header class="panel-heading">
+          <div><h2 id="roi-title">历史 ROI 回测</h2><p id="roi-caption"></p></div>
+          <div class="window-tabs" id="window-tabs" role="group" aria-label="回测窗口">
+            <button type="button" data-window="50" aria-pressed="true">50 期</button>
+            <button type="button" data-window="100" aria-pressed="false">100 期</button>
+            <button type="button" data-window="200" aria-pressed="false">200 期</button>
+            <button type="button" data-window="500" aria-pressed="false">500 期</button>
+          </div>
+        </header>
+        <div class="table-scroll" tabindex="0" aria-label="历史 ROI 表格，可横向滚动">
+          <table>
+            <thead><tr><th scope="col">追踪号</th><th scope="col">期数</th><th scope="col">注数</th><th scope="col">命中</th><th scope="col">投入</th><th scope="col">返还</th><th scope="col">盈亏</th><th scope="col">ROI</th></tr></thead>
+            <tbody id="roi-rows"></tbody>
+          </table>
+        </div>
+        <p class="table-note"><span class="legend-dot" aria-hidden="true"></span> 高亮表示达到当前 ROI 门槛。一个车位的每个候选号计一注。</p>
+      </section>
+
+      <section class="panel analysis-panel" aria-labelledby="map-title">
+        <header class="panel-heading">
+          <div><h2 id="map-title">下一期车位映射</h2><p id="map-caption">点击追踪号查看历期映射。</p></div>
+        </header>
+        <div class="map-labels" aria-hidden="true"><span>追踪号</span><span>候选号</span><span>车位</span></div>
+        <div id="map-rows"></div>
+        <section class="detail-panel" id="detail-panel" hidden aria-labelledby="detail-title">
+          <div class="detail-heading"><h3 id="detail-title">历史映射</h3><button class="icon-button" id="detail-close" type="button" aria-label="关闭映射详情">×</button></div>
+          <div class="history-labels" aria-hidden="true"><span>历史期号</span><span>同车位</span><span>下期开出</span></div>
+          <div id="detail-history"></div>
+        </section>
+      </section>
+    </div>
+
+    <section class="panel combo-panel" id="combo-panel" aria-labelledby="combo-title">
+      <header class="panel-heading combo-heading">
+        <h2 id="combo-title">组合统计</h2>
+        <div class="combo-actions">
+          <div class="window-tabs" id="combo-mode" role="group" aria-label="组合统计方式">
+            <button type="button" data-combo-mode="replay" aria-pressed="true">历史回放</button>
+            <button type="button" data-combo-mode="live" aria-pressed="false">实时账本</button>
+          </div>
+          <button class="button secondary" id="combo-toggle" type="button">开始跟踪</button>
+          <button class="button danger-outline" id="combo-clear" type="button" hidden>清空账本</button>
+        </div>
+      </header>
+      <div class="combo-controls">
+        <div class="window-tabs" id="combo-range" role="group" aria-label="组合统计最近记录数">
+          <button type="button" data-combo-limit="50" aria-pressed="false">最近 50 条</button>
+          <button type="button" data-combo-limit="100" aria-pressed="false">100 条</button>
+          <button type="button" data-combo-limit="200" aria-pressed="false">200 条</button>
+          <button type="button" data-combo-limit="500" aria-pressed="true">500 条</button>
+        </div>
+        <form id="combo-stake-form" class="combo-stake-form">
+          <label for="combo-stake">单注初始金额
+            <span class="combo-stake-field"><input id="combo-stake" type="number" min="0.01" max="1000000" step="0.01" value="10" required><span>元</span></span>
+          </label>
+          <label for="combo-progression">倍投方式
+            <select id="combo-progression">
+              <option value="fixed">固定金额</option>
+              <option value="martingale">马丁格尔（翻倍）</option>
+              <option value="fibonacci">斐波那契</option>
+            </select>
+          </label>
+          <label for="combo-reset">恢复条件
+            <select id="combo-reset">
+              <option value="hit">命中就恢复</option>
+              <option value="profit">整单盈利才恢复</option>
+            </select>
+          </label>
+          <label for="combo-max-cost">单期投入上限
+            <span class="combo-stake-field"><input id="combo-max-cost" type="number" min="0.01" step="0.01" placeholder="不限"><span>元</span></span>
+          </label>
+          <label for="combo-cap-action">超限处理
+            <select id="combo-cap-action">
+              <option value="reset">恢复初始金额</option>
+              <option value="capped">按上限继续</option>
+            </select>
+          </label>
+          <button class="button secondary" type="submit">应用模拟参数</button>
+          <p id="combo-stake-error" role="alert" hidden></p>
+        </form>
+      </div>
+      <div class="combo-context">
+        <p id="combo-hint">正在计算历史回放…</p>
+        <p id="combo-status" role="status"><span></span></p>
+      </div>
+      <div class="combo-summary" id="combo-summary" aria-label="组合统计汇总"></div>
+      <div class="combo-list-heading" aria-hidden="true">
+        <span>期号</span><span>结果</span><span>投入</span><span>返还</span><span>盈亏</span>
+      </div>
+      <div class="combo-rows" id="combo-rows"></div>
+      <div class="combo-more-wrap"><button class="button secondary" id="combo-more" type="button" hidden>查看更早期次</button></div>
+    </section>
+
+    <footer class="footer">
+      <p id="dataset-note">演示数据用于体验回测流程。</p>
+      <button class="text-button" type="button" id="sample-reset">恢复演示数据</button>
+    </footer>
+  </main>
+
+  <dialog id="game-dialog" aria-labelledby="game-dialog-title">
+    <div class="dialog-header">
+      <h2 id="game-dialog-title">添加盘口</h2>
+      <button class="icon-button" id="game-add-cancel" type="button" aria-label="关闭添加盘口">×</button>
+    </div>
+    <div class="game-presets" id="game-presets"></div>
+  </dialog>
+
+  <dialog id="import-dialog" aria-labelledby="import-title">
+    <div class="dialog-header">
+      <div><h2 id="import-title">导入历史开奖</h2><p id="import-description"></p></div>
+      <button class="icon-button" id="import-cancel" type="button" aria-label="关闭导入">×</button>
+    </div>
+    <form id="import-form">
+      <label class="file-picker" for="import-file">选择 CSV 文件<input id="import-file" type="file" accept=".csv,text/csv"></label>
+      <div class="paste-heading"><label for="import-text">或粘贴 CSV</label><button class="text-button" type="button" id="sample-download">下载示例 CSV</button></div>
+      <textarea id="import-text" rows="5" spellcheck="false" placeholder="period,n1,n2,n3,n4,n5,n6,n7,n8,n9,n10&#10;1001,4,7,5,6,3,1,10,2,9,8"></textarea>
+      <p class="input-error" id="import-error" role="alert" hidden></p>
+      <p class="privacy-note">数据在浏览器中处理。导入时按期号排序，缺期会中断这一段回测。</p>
+      <div class="dialog-footer"><button class="button primary" type="submit">导入并回测</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="combo-clear-dialog" aria-labelledby="combo-clear-title" aria-describedby="combo-clear-description">
+    <div class="dialog-header"><h2 id="combo-clear-title">清空实时账本？</h2></div>
+    <p class="privacy-note" id="combo-clear-description">这会删除当前浏览器里的全部实时账本记录，包括待开奖记录。如果正在跟踪，将从下一期重新累计。清空后无法恢复。</p>
+    <div class="dialog-footer">
+      <button class="button secondary" id="combo-clear-cancel" type="button" autofocus>取消</button>
+      <button class="button danger-solid" id="combo-clear-confirm" type="button">确认清空</button>
+    </div>
+  </dialog>
+
+  <script>(function () {
+  "use strict";
+
+  const base = "https://api.api68.com/";
+  const race = Object.freeze({ positions: 10, min: 1, max: 10, unique: true });
+  const digits = Object.freeze({ positions: 5, min: 0, max: 9, unique: false });
+
+  function api68(lotCode, latestPath, historyPath) {
+    return Object.freeze({ base, lotCode, latestPath, historyPath });
+  }
+
+  function datedIssue(issue) {
+    const match = /^(\d{4})(\d{2})(\d{2})(\d{3})$/.exec(String(issue));
+    if (!match) return null;
+    const [, year, month, day, suffix] = match;
+    const date = `${year}-${month}-${day}`;
+    const time = Date.parse(date + "T00:00:00Z");
+    if (!Number.isFinite(time) || new Date(time).toISOString().slice(0, 10) !== date) return null;
+    return { date, time, sequence: Number(suffix) };
+  }
+
+  function datedRace(issuesPerDay) {
+    function continuous(previous, current) {
+      const from = datedIssue(previous.id);
+      const to = datedIssue(current.id);
+      if (!from || !to || from.sequence < 1 || from.sequence > issuesPerDay
+        || to.sequence < 1 || to.sequence > issuesPerDay) return false;
+      if (from.date === to.date) return to.sequence === from.sequence + 1;
+      return to.time - from.time === 86400000 && from.sequence === issuesPerDay && to.sequence === 1;
+    }
+
+    function issueDate(issue) {
+      const parts = datedIssue(issue);
+      if (parts && parts.sequence >= 1 && parts.sequence <= issuesPerDay) return parts.date;
+    }
+
+    function sampleIssue(index) {
+      const time = Date.UTC(2026, 0, 1 + Math.floor(index / issuesPerDay));
+      const date = new Date(time).toISOString().slice(0, 10).replaceAll("-", "");
+      return date + String(index % issuesPerDay + 1).padStart(3, "0");
+    }
+
+    return Object.freeze({ ...race, issuesPerDay, sampleIssue, consecutive: continuous, issueDate });
+  }
+
+  function site168(code, intervalSeconds, firstDraw) {
+    return Object.freeze({ code, intervalSeconds, firstDraw, proxyPath: "/api/lottery" });
+  }
+
+  const presets = Object.freeze([
+    {
+      id: "speed",
+      label: "极速赛车",
+      sourceLabel: "168极速赛车 · API68",
+      format: race,
+      available: true,
+      provider: api68("10037", "pks/getLotteryPksInfo.do", "pks/getPksHistoryList.do"),
+    },
+    {
+      id: "lucky5",
+      label: "澳洲幸运5",
+      sourceLabel: "澳洲幸运5 · API68",
+      format: digits,
+      available: true,
+      provider: api68("10010", "CQShiCai/getBaseCQShiCai.do", "CQShiCai/getBaseCQShiCaiList.do"),
+      bootstrapDays: 4,
+      historyDays: 10,
+    },
+    {
+      id: "lucky-racing",
+      label: "幸运赛车",
+      sourceLabel: "幸运赛车 · 168开奖网",
+      format: datedRace(420),
+      available: true,
+      provider: site168("xysc", 180, "09:03:00"),
+      bootstrapDays: 3,
+      historyDays: 6,
+    },
+    {
+      id: "australia-racing",
+      label: "澳洲赛车",
+      sourceLabel: "澳洲赛车 · 168开奖网",
+      format: datedRace(270),
+      available: true,
+      provider: site168("azsc", 300, "07:05:00"),
+      bootstrapDays: 4,
+      historyDays: 8,
+    },
+    {
+      id: "yacht",
+      label: "幸运飞艇",
+      sourceLabel: "幸运飞艇 · API68",
+      format: datedRace(180),
+      available: true,
+      provider: api68("10057", "pks/getLotteryPksInfo.do", "pks/getPksHistoryList.do"),
+      bootstrapDays: 5,
+      historyDays: 10,
+    },
+  ].map(Object.freeze));
+
+  function get(id) {
+    return presets.find((game) => game.id === id);
+  }
+
+  globalThis.TrackGames = Object.freeze({ defaultGame: presets[0], presets, get, datedIssue });
+})();
+</script>
+  <script>(function () {
+  "use strict";
+
+  const maxSafeCents = BigInt(Number.MAX_SAFE_INTEGER);
+
+  const windows = [50, 100, 200, 500];
+  const defaultComboStake = 10;
+  const defaultFormat = { positions: 10, min: 1, max: 10, unique: true };
+
+  function compareIds(a, b) {
+    return a.length - b.length || (a < b ? -1 : a > b ? 1 : 0);
+  }
+
+  function parseCsv(text, { positions, min, max, unique }) {
+    const seenIds = new Set();
+    const records = [];
+    let firstRow = true;
+
+    const lines = text.replace(/^\uFEFF/, "").split(/\r\n|\n|\r/);
+    for (const [index, line] of lines.entries()) {
+      if (!line.trim()) continue;
+      const fields = line.split(",").map((field) => field.trim().replace(/^"([^"]*)"$/, "$1").trim());
+      const [id, ...values] = fields;
+      const row = "第 " + (index + 1) + " 行";
+      const isHeader = firstRow && /^(period|issue|id|期号)$/i.test(id);
+      firstRow = false;
+      if (isHeader) {
+        const labelsMatch = values.length === positions && values.every((value, position) => {
+          const rank = position + 1;
+          return [rank.toString(), "n" + rank, "第" + rank + "名", "第" + rank + "位"].includes(value.toLowerCase());
+        });
+        if (!labelsMatch) throw new Error(row + "表头应按第 1 至第 " + positions + " 位排列。");
+        continue;
+      }
+
+      if (fields.length !== positions + 1) throw new Error(row + "应包含期号及 " + positions + " 个位置，共 " + (positions + 1) + " 列。");
+      if (!/^\d+$/.test(id)) throw new Error(row + "的期号必须由数字组成。");
+      const numericId = id.replace(/^0+(?=\d)/, "");
+      if (seenIds.has(numericId)) throw new Error(row + "的期号 " + id + " 重复。");
+      if (values.some((value) => !/^\d+$/.test(value) || Number(value) < min || Number(value) > max)) {
+        throw new Error(row + "的号码必须是 " + min + " 至 " + max + " 的整数。");
+      }
+
+      const draw = values.map(Number);
+      if (unique && new Set(draw).size !== positions) throw new Error(row + "有重复号码。每期的 " + positions + " 个号码应各出现一次。");
+      seenIds.add(numericId);
+      records.push({ id, numbers: draw, numericId });
+    }
+
+    if (!records.length) throw new Error("CSV 中没有开奖记录。");
+    records.sort((a, b) => compareIds(a.numericId, b.numericId));
+    return records.map(({ id, numbers }) => ({ id, numbers }));
+  }
+
+  function toCsv(draws, { positions }) {
+    const header = ["period", ...Array.from({ length: positions }, (_, index) => "n" + (index + 1))];
+    return [header.join(","), ...draws.map(({ id, numbers }) => [id, ...numbers].join(","))].join("\r\n") + "\r\n";
+  }
+
+  function sampleData({ positions, numbers, unique, sampleIssue }) {
+    let state = 91736421;
+    function random() {
+      state ^= state << 13;
+      state ^= state >>> 17;
+      state ^= state << 5;
+      return (state >>> 0) / 4294967296;
+    }
+
+    return Array.from({ length: 620 }, (_, index) => {
+      const id = sampleIssue(index);
+      if (!unique) {
+        const draw = Array.from({ length: positions }, () => numbers[Math.floor(random() * numbers.length)]);
+        return { id, numbers: draw };
+      }
+      const draw = numbers.slice();
+      for (let position = draw.length - 1; position > 0; position--) {
+        const other = Math.floor(random() * (position + 1));
+        [draw[position], draw[other]] = [draw[other], draw[position]];
+      }
+      return { id, numbers: draw.slice(0, positions) };
+    });
+  }
+
+  function collectMapping(draws, start, end, includeHistory, { positions, numbers, min }) {
+    const masks = new Uint32Array(numbers.length);
+    const counts = new Uint8Array(numbers.length);
+    const history = includeHistory ? numbers.map(() => []) : undefined;
+
+    for (let drawIndex = start; drawIndex < end; drawIndex++) {
+      const current = draws[drawIndex];
+      const next = draws[drawIndex + 1];
+      for (let position = 0; position < positions; position++) {
+        const trackingIndex = current.numbers[position] - min;
+        const result = next.numbers[position];
+        const bit = 1 << (result - min);
+        if (!(masks[trackingIndex] & bit)) {
+          masks[trackingIndex] |= bit;
+          counts[trackingIndex]++;
+        }
+        if (history) {
+          history[trackingIndex].push({ id: current.id, nextId: next.id, position: position + 1, result });
+        }
+      }
+    }
+    return { masks, counts, history };
+  }
+
+  function comboStakeInCents(amount = defaultComboStake) {
+    const scaled = amount * 100;
+    const cents = Math.round(scaled);
+    const tolerance = Number.EPSILON * Math.max(1, Math.abs(scaled)) * 2;
+    if (!Number.isFinite(amount) || cents < 1 || cents > 100000000
+      || Math.abs(scaled - cents) > tolerance) {
+      throw new Error("每个候选号的投入应为 0.01 至 1,000,000 元，最多保留两位小数。");
+    }
+    return cents;
+  }
+
+  function comboCapInCents(amount) {
+    if (amount == null) return null;
+    const scaled = amount * 100;
+    const cents = Math.round(scaled);
+    const tolerance = 2 * Number.EPSILON * Math.max(1, Math.abs(scaled));
+    if (!Number.isFinite(amount) || !Number.isSafeInteger(cents) || cents < 1 || Math.abs(scaled - cents) > tolerance) {
+      throw new Error("单期投入上限须大于 0，且最多保留两位小数。");
+    }
+    return BigInt(cents);
+  }
+
+  function centsValue(value) {
+    return value >= -maxSafeCents && value <= maxSafeCents ? Number(value) : value;
+  }
+
+  function compareComboCents(left, right) {
+    const difference = BigInt(left) - BigInt(right);
+    return difference < 0n ? -1 : difference > 0n ? 1 : 0;
+  }
+
+  function addComboCents(left, right) {
+    return centsValue(BigInt(left) + BigInt(right));
+  }
+
+  function validateSettings(settings) {
+    const {
+      lookback, odds, threshold, thresholdMax, maxCandidatesPerPosition = 10, window, comboStake,
+      comboProgression = "fixed", comboReset = "hit", comboMaxCost, comboCapAction = "reset",
+    } = settings;
+    if (!Number.isInteger(lookback) || lookback < 2 || lookback > 100) {
+      throw new Error("回看期数应为 2 至 100 的整数。");
+    }
+    if (!Number.isFinite(odds) || odds <= 0) {
+      throw new Error("返还倍数应大于 0。");
+    }
+    if (!Number.isFinite(threshold) || !windows.includes(window)) {
+      throw new Error("请选择有效的 ROI 门槛和统计区间。");
+    }
+    if (thresholdMax != null && (!Number.isFinite(thresholdMax) || thresholdMax < threshold)) {
+      throw new Error("ROI 上限必须为有效数字，并且大于或等于下限。");
+    }
+    if (!Number.isInteger(maxCandidatesPerPosition) || maxCandidatesPerPosition < 1 || maxCandidatesPerPosition > 10) {
+      throw new Error("每个车位的候选号上限应为 1 至 10 的整数。");
+    }
+    comboStakeInCents(comboStake);
+    if (!["fixed", "martingale", "fibonacci"].includes(comboProgression)) {
+      throw new Error("请选择有效的组合递进方式。");
+    }
+    if (!["hit", "profit"].includes(comboReset)) {
+      throw new Error("请选择有效的组合递进重置条件。");
+    }
+    if (!["reset", "capped"].includes(comboCapAction)) {
+      throw new Error("请选择有效的超额处理方式。");
+    }
+    comboCapInCents(comboMaxCost);
+  }
+
+  function adjacentByIssue(previous, current) {
+    return BigInt(current.id) === BigInt(previous.id) + 1n;
+  }
+
+  function latestSegmentStart(draws, earliestNeeded, consecutive) {
+    let index = Math.max(0, draws.length - 1);
+    while (index > earliestNeeded && consecutive(draws[index - 1], draws[index])) index--;
+    return index;
+  }
+
+  function evaluateRound(previous, actual, { masks, counts }, { positions, numbers, min }) {
+    const bets = new Uint16Array(numbers.length);
+    const hits = new Uint8Array(numbers.length);
+    for (let position = 0; position < positions; position++) {
+      const trackingIndex = previous[position] - min;
+      bets[trackingIndex] += counts[trackingIndex];
+      hits[trackingIndex] += Number(Boolean(masks[trackingIndex] & (1 << (actual[position] - min))));
+    }
+    return { bets, hits };
+  }
+
+  function candidatesFromMask(mask, { numbers, min }) {
+    return numbers.filter((number) => mask & (1 << (number - min)));
+  }
+
+  function positionsFor(draw, digit) {
+    return draw ? draw.numbers.flatMap((number, index) => number === digit ? [index + 1] : []) : [];
+  }
+
+  function selectComboPositions(mappings, maxCandidatesPerPosition) {
+    const picks = [];
+    const excludedPositions = [];
+    for (const { d, positions, candidates } of mappings) {
+      const candidateCount = candidates.length;
+      if (!candidateCount) continue;
+      for (const position of positions) {
+        if (candidateCount > maxCandidatesPerPosition) excludedPositions.push({ d, position, candidateCount });
+        else picks.push({ d, position, candidates });
+      }
+    }
+    return { picks, excludedPositions };
+  }
+
+  function roiPercent(cost, returns) {
+    return cost ? (100 * (returns - cost)) / cost : null;
+  }
+
+  function qualifies(roi, threshold, thresholdMax) {
+    if (!Number.isFinite(roi)) return false;
+    const tolerance = 4 * Number.EPSILON * Math.max(100, Math.abs(roi));
+    return roi >= threshold - tolerance && (thresholdMax == null || roi <= thresholdMax + tolerance);
+  }
+
+  function analyze(draws, settings, format) {
+    validateSettings(settings);
+    const { lookback, stake, odds, threshold, thresholdMax, maxCandidatesPerPosition = 10, window } = settings;
+    const { numbers, consecutive } = format;
+    if (!Number.isFinite(stake) || stake <= 0) {
+      throw new Error("每注金额应大于 0。");
+    }
+
+    const stats = Object.fromEntries(windows.map((size) => [
+      size, numbers.map((d) => ({ d, rounds: 0, bets: 0, hits: 0 })),
+    ]));
+    const largestWindow = windows[windows.length - 1];
+    const segmentStart = latestSegmentStart(draws, Math.max(0, draws.length - largestWindow - lookback), consecutive);
+    const firstTarget = Math.max(segmentStart + lookback, draws.length - largestWindow);
+    for (let target = firstTarget; target < draws.length; target++) {
+      // The last transition ends at target - 1, the most recent known draw.
+      const mapping = collectMapping(draws, target - lookback, target - 1, false, format);
+      const previous = draws[target - 1].numbers;
+      const { bets, hits } = evaluateRound(previous, draws[target].numbers, mapping, format);
+      const age = draws.length - target;
+
+      for (const size of windows) {
+        if (age > size) continue;
+        for (let trackingIndex = 0; trackingIndex < numbers.length; trackingIndex++) {
+          const row = stats[size][trackingIndex];
+          row.rounds++;
+          row.bets += bets[trackingIndex];
+          row.hits += hits[trackingIndex];
+        }
+      }
+    }
+
+    for (const size of windows) {
+      for (const row of stats[size]) {
+        row.cost = row.bets * stake;
+        row.returns = row.hits * stake * odds;
+        row.profit = row.returns - row.cost;
+        row.roi = roiPercent(row.bets, row.hits * odds);
+      }
+    }
+
+    const lastIndex = draws.length - 1;
+    const recent = collectMapping(draws, Math.max(segmentStart, draws.length - lookback), lastIndex, true, format);
+    const latest = draws[lastIndex];
+    const mappings = numbers.map((d, index) => {
+      const positions = positionsFor(latest, d);
+      return {
+        d,
+        position: positions[0] ?? null,
+        positions,
+        candidates: candidatesFromMask(recent.masks[index], format),
+        history: recent.history[index],
+      };
+    });
+    const roiQualified = stats[window]
+      .filter(({ roi }) => qualifies(roi, threshold, thresholdMax))
+      .map(({ d }) => d);
+    const { picks, excludedPositions } = selectComboPositions(
+      roiQualified.map((d) => mappings[d - format.min]), maxCandidatesPerPosition,
+    );
+    const selection = [...new Set(picks.map(({ d }) => d))];
+
+    return { windows: stats, mappings, roiQualified, selection, picks, excludedPositions };
+  }
+
+  function stakeMultiplier(progression, step) {
+    if (progression === "fixed") return 1n;
+    if (progression === "martingale") return 1n << BigInt(step);
+
+    // Fast doubling finds the first Fibonacci stake as F(1), followed by F(2).
+    let current = 0n;
+    let next = 1n;
+    for (const bit of (BigInt(step) + 1n).toString(2)) {
+      const doubled = current * (2n * next - current);
+      const following = current * current + next * next;
+      [current, next] = bit === "0" ? [doubled, following] : [following, doubled + following];
+    }
+    return current;
+  }
+
+  function makeComboPlan(issue, settings, evaluated, { picks, excludedPositions }, requestedState) {
+    const {
+      lookback, odds, threshold, thresholdMax = null, maxCandidatesPerPosition = 10, window,
+      comboProgression = "fixed", comboReset = "hit", comboMaxCost = null, comboCapAction = "reset",
+    } = settings;
+    const base = BigInt(comboStakeInCents(settings.comboStake));
+    const cap = comboCapInCents(comboMaxCost);
+    const fixed = comboProgression === "fixed";
+    const state = typeof requestedState === "number" ? { step: requestedState, capped: false } : requestedState;
+    if (!state || !Number.isSafeInteger(state.step) || state.step < 0 || typeof state.capped !== "boolean") {
+      throw new Error("组合递进状态无效。");
+    }
+    let step = fixed ? 0 : state.step;
+    let capped = !fixed && cap !== null && comboCapAction === "capped" && state.capped;
+    let stake = base * stakeMultiplier(comboProgression, step);
+    const qualifiedCount = picks.length;
+    let skipReason;
+    if (qualifiedCount === 0) skipReason = excludedPositions.length ? "candidate_limit" : "no_qualifiers";
+    const qualifiedBets = picks.reduce((total, { candidates }) => total + candidates.length, 0);
+    const betsAsInteger = BigInt(qualifiedBets);
+    const projectedCost = betsAsInteger * stake;
+    let capApplied;
+    if (!skipReason && cap !== null && (capped || projectedCost > cap)) {
+      if (fixed) {
+        skipReason = "stake_limit";
+      } else if (comboCapAction === "reset") {
+        capApplied = "reset";
+        step = 0;
+        stake = base;
+        if (betsAsInteger * stake > cap) skipReason = "stake_limit";
+      } else {
+        capApplied = "capped";
+        capped = true;
+        stake = cap / betsAsInteger;
+        if (stake === 0n) skipReason = "stake_limit";
+      }
+    }
+    const plan = {
+      issue: String(issue),
+      settings: {
+        lookback, odds, threshold, thresholdMax, maxCandidatesPerPosition, window, comboStake: Number(base) / 100,
+        comboProgression, comboReset, comboMaxCost, comboCapAction,
+      },
+      evaluated,
+      qualifiedCount,
+      excludedPositions,
+      step,
+      capped,
+      stakeCents: centsValue(stake),
+      picks: skipReason ? [] : picks,
+      bets: skipReason ? 0 : qualifiedBets,
+      cost: skipReason ? 0 : centsValue(betsAsInteger * stake),
+    };
+    if (skipReason) plan.skipReason = skipReason;
+    if (capApplied || skipReason === "stake_limit") plan.projectedCost = centsValue(projectedCost);
+    if (capApplied) plan.capApplied = capApplied;
+    return plan;
+  }
+
+  function createComboPlan(draws, settings, targetIssue, format, state) {
+    const analysis = analyze(draws, { ...settings, stake: defaultComboStake }, format);
+    const stats = analysis.windows;
+    const evaluated = stats[settings.window][0].rounds;
+    if (!evaluated) return null;
+
+    const latest = draws.at(-1);
+    const target = targetIssue != null && typeof targetIssue === "object" ? targetIssue
+      : { id: String(targetIssue ?? (BigInt(latest.id) + 1n)) };
+    if (!format.consecutive(latest, target)) {
+      throw new Error("模拟组合的目标期号应紧接最新已开奖期号。");
+    }
+    return makeComboPlan(target.id, settings, evaluated, analysis, state);
+  }
+
+  function comboRowStakeCents(row) {
+    return row.stakeCents ?? comboStakeInCents(row.settings?.comboStake);
+  }
+
+  function roundedPayout(stake, odds) {
+    const [mantissa, exponent = "0"] = String(odds).split("e");
+    const [whole, fraction = ""] = mantissa.split(".");
+    const places = fraction.length - Number(exponent);
+    const units = BigInt(whole + fraction);
+    if (places <= 0) return stake * units * (10n ** BigInt(-places));
+    const divisor = 10n ** BigInt(places);
+    return (stake * units * 2n + divisor) / (2n * divisor);
+  }
+
+  function stateAfter(row) {
+    const { comboProgression = "fixed", comboReset = "hit" } = row.settings ?? {};
+    if (comboProgression === "fixed") return { step: 0, capped: false };
+    const { step = 0 } = row;
+    const capped = row.capped === true;
+    if (row.status === "skipped" || row.status === "pending") return { step, capped };
+    const hit = row.hits > 0;
+    if (comboReset === "hit" && hit) return { step: 0, capped: false };
+    if (comboReset === "profit") {
+      const outcome = compareComboCents(row.profit, 0);
+      if (outcome > 0) return { step: 0, capped: false };
+      if (outcome === 0 || hit) return { step, capped };
+    }
+    return { step: capped ? step : step + 1, capped };
+  }
+
+  function nextComboState(lastRow, settings) {
+    const {
+      comboProgression = "fixed", comboReset = "hit", comboStake = defaultComboStake,
+      comboMaxCost, comboCapAction = "reset",
+    } = settings;
+    const previous = lastRow?.settings;
+    if (!previous || comboProgression === "fixed" || previous.comboProgression !== comboProgression
+      || previous.comboReset !== comboReset || previous.comboStake !== comboStake
+      || (previous.comboCapAction ?? "reset") !== comboCapAction
+      || !Number.isSafeInteger(lastRow.step) || lastRow.step < 0) return { step: 0, capped: false };
+    const fallback = stateAfter(lastRow);
+    const legacyHitLoss = previous.maxCandidatesPerPosition === undefined && comboReset === "profit"
+      && lastRow.status === "hit" && compareComboCents(lastRow.profit, 0) < 0;
+    return {
+      step: !legacyHitLoss && Number.isSafeInteger(lastRow.nextStep) && lastRow.nextStep >= 0
+        ? lastRow.nextStep : fallback.step,
+      capped: comboCapAction === "capped" && comboMaxCost != null && (lastRow.nextCapped ?? fallback.capped) === true,
+    };
+  }
+
+  function nextComboStep(lastRow, settings) {
+    return nextComboState(lastRow, settings).step;
+  }
+
+  function settleCombo(plan, draw) {
+    if (BigInt(plan.issue) !== BigInt(draw.id)) {
+      throw new Error("请使用模拟组合目标期号的开奖结果结算。");
+    }
+    const results = plan.picks.map(({ d, position, candidates }) => {
+      const actual = draw.numbers[position - 1];
+      return { d, position, candidates, actual, hit: candidates.includes(actual) };
+    });
+    const hits = results.reduce((total, result) => total + Number(result.hit), 0);
+    const returnPerHit = roundedPayout(BigInt(comboRowStakeCents(plan)), plan.settings.odds);
+    const returns = BigInt(hits) * returnPerHit;
+    const status = plan.bets === 0 ? "skipped" : hits ? "hit" : "miss";
+    const row = {
+      ...plan, status, hits, returns: centsValue(returns), profit: centsValue(returns - BigInt(plan.cost)), results,
+    };
+    const next = stateAfter(row);
+    return { ...row, nextStep: next.step, nextCapped: next.capped };
+  }
+
+  function replayCombo(draws, settings, limit, format) {
+    validateSettings(settings);
+    if (!Number.isSafeInteger(limit) || limit < 0) throw new Error("回放期数必须是非负整数。");
+    const {
+      lookback, odds, threshold, thresholdMax, maxCandidatesPerPosition = 10, window, comboProgression = "fixed",
+    } = settings;
+    const { numbers, consecutive } = format;
+    const rows = [];
+    const firstReported = Math.max(0, draws.length - limit);
+    const progressive = comboProgression !== "fixed";
+    const firstNeeded = progressive ? 0 : Math.max(0, firstReported - window - lookback);
+    const counts = new Uint32Array(numbers.length);
+    const hits = new Uint16Array(numbers.length);
+    // These are the latest base rounds used when selecting trackers, whether the combo played or skipped.
+    const history = new Array(window);
+    let segmentStart = firstNeeded;
+    let afterGap = false;
+    let completed = 0;
+    let state = { step: 0, capped: false };
+
+    for (let target = firstNeeded + 1; limit > 0 && target < draws.length; target++) {
+      const draw = draws[target];
+      const previous = draws[target - 1];
+      if (!consecutive(previous, draw)) {
+        segmentStart = target;
+        afterGap = true;
+        completed = 0;
+        state = { step: 0, capped: false };
+        counts.fill(0);
+        hits.fill(0);
+      }
+      if (target - segmentStart < lookback) continue;
+
+      const mapping = collectMapping(draws, target - lookback, target - 1, false, format);
+      if (completed > 0 && (progressive || target >= firstReported)) {
+        // Do not look at the target's result until the selections and prices are fixed.
+        const mappings = [];
+        for (const [index, d] of numbers.entries()) {
+          if (qualifies(roiPercent(counts[index], hits[index] * odds), threshold, thresholdMax)) {
+            const candidates = candidatesFromMask(mapping.masks[index], format);
+            mappings.push({ d, positions: positionsFor(previous, d), candidates });
+          }
+        }
+        const eligible = selectComboPositions(mappings, maxCandidatesPerPosition);
+        const plan = makeComboPlan(draw.id, settings, Math.min(completed, window), eligible, state);
+        const row = settleCombo(plan, draw);
+        state = { step: row.nextStep, capped: row.nextCapped };
+        if (afterGap && completed === 1) row.startsSegment = true;
+        if (target >= firstReported) rows.push(row);
+      }
+
+      const round = evaluateRound(previous.numbers, draw.numbers, mapping, format);
+      const slot = completed % window;
+      const leaving = completed >= window ? history[slot] : null;
+      for (let index = 0; index < numbers.length; index++) {
+        counts[index] += round.bets[index] - (leaving?.bets[index] ?? 0);
+        hits[index] += round.hits[index] - (leaving?.hits[index] ?? 0);
+      }
+      history[slot] = round;
+      completed++;
+    }
+    return rows;
+  }
+
+  function comboRoi(cost, returns) {
+    if (cost === 0n) return null;
+    if (cost <= maxSafeCents && returns <= maxSafeCents) return roiPercent(Number(cost), Number(returns));
+    const profit = returns - cost;
+    const magnitude = profit < 0n ? -profit : profit;
+    const scale = Math.max(0, 16 + String(cost).length - String(magnitude).length);
+    const digits = (100n * profit * (10n ** BigInt(scale))) / cost;
+    return Number(`${digits}e-${scale}`);
+  }
+
+  function maxCents(left, right) {
+    return left > right ? left : right;
+  }
+
+  function summarizeCombo(rows) {
+    let played = 0;
+    let winning = 0;
+    let profitable = 0;
+    let cost = 0n;
+    let returns = 0n;
+    let maxCost = 0n;
+    let lossStreak = 0;
+    let longestLosses = 0;
+    const emptyMissStreak = { count: 0, stake: 0n, cost: 0n };
+    let missStreak = emptyMissStreak;
+    let longest = emptyMissStreak;
+
+    for (const row of rows) {
+      if (row.startsSegment) {
+        lossStreak = 0;
+        missStreak = emptyMissStreak;
+      }
+      const roundCost = BigInt(row.cost);
+      maxCost = maxCents(maxCost, roundCost);
+      if (!row.bets || row.status === "pending") continue;
+      const profit = BigInt(row.profit);
+      played++;
+      winning += Number(row.status === "hit");
+      profitable += Number(profit > 0n);
+      cost += roundCost;
+      returns += BigInt(row.returns);
+      lossStreak = profit < 0n ? lossStreak + 1 : 0;
+      longestLosses = Math.max(longestLosses, lossStreak);
+      if (row.status !== "miss") {
+        missStreak = emptyMissStreak;
+        continue;
+      }
+      missStreak = {
+        count: missStreak.count + 1,
+        stake: maxCents(missStreak.stake, BigInt(comboRowStakeCents(row))),
+        cost: maxCents(missStreak.cost, roundCost),
+      };
+      if (missStreak.count > longest.count || (missStreak.count === longest.count
+        && (missStreak.cost > longest.cost || (missStreak.cost === longest.cost && missStreak.stake > longest.stake)))) {
+        longest = missStreak;
+      }
+    }
+
+    return {
+      played, winning, profitable, cost: centsValue(cost), returns: centsValue(returns),
+      profit: centsValue(returns - cost), roi: comboRoi(cost, returns),
+      longestMisses: longest.count, streakMaxStake: centsValue(longest.stake), streakMaxCost: centsValue(longest.cost),
+      maxCost: centsValue(maxCost), longestLosses,
+    };
+  }
+
+  function forFormat({ positions, min, max, unique, consecutive = adjacentByIssue, sampleIssue = (index) => String(100001 + index) }) {
+    const size = max - min + 1;
+    if (![positions, min, max].every(Number.isSafeInteger) || positions < 1 || positions > 10
+      || min < 0 || size < 1 || size > 31 || typeof unique !== "boolean" || (unique && positions > size)
+      || typeof consecutive !== "function" || typeof sampleIssue !== "function") {
+      throw new Error("开奖格式无效。");
+    }
+    const numbers = Array.from({ length: size }, (_, index) => min + index);
+    const format = { positions, min, max, unique, consecutive, numbers, sampleIssue };
+    return {
+      parseCsv: (input) => parseCsv(input, format),
+      toCsv: (draws) => toCsv(draws, format),
+      sampleData: () => sampleData(format),
+      analyze: (draws, settings) => analyze(draws, settings, format),
+      createComboPlan: (draws, settings, target, state = 0) => createComboPlan(draws, settings, target, format, state),
+      settleCombo,
+      replayCombo: (draws, settings, limit = 500) => replayCombo(draws, settings, limit, format),
+      summarizeCombo,
+      nextComboState,
+      nextComboStep,
+      compareComboCents,
+      addComboCents,
+      comboRowStakeCents,
+    };
+  }
+
+  globalThis.TrackLab = { ...forFormat(defaultFormat), forFormat };
+})();
+</script>
+  <script>(function () {
+  "use strict";
+
+  const defaultFormat = { positions: 10, min: 1, max: 10, unique: true };
+  const defaultGame = { format: defaultFormat, provider: { lotCode: "10037" } };
+
+  function verifyLottery(row, lotCode) {
+    if (row.lotCode != null && String(row.lotCode) !== lotCode) {
+      throw new Error("开奖接口返回的彩种与 " + lotCode + " 不符。");
+    }
+  }
+
+  function verifyEnvelope(payload, lotCode) {
+    const result = payload?.result;
+    if (String(payload?.errorCode) !== "0" || String(result?.businessCode) !== "0") {
+      throw new Error("开奖接口没有返回成功结果。");
+    }
+    verifyLottery(result, lotCode);
+    return result.data;
+  }
+
+  function normalizeIssue(value) {
+    if (typeof value !== "string" && !Number.isSafeInteger(value)) {
+      throw new Error("开奖接口返回的期号无效。");
+    }
+    const issue = String(value).trim();
+    if (!/^\d+$/.test(issue) || BigInt(issue) <= 0n) {
+      throw new Error("开奖接口返回的期号无效。");
+    }
+    return BigInt(issue);
+  }
+
+  function normalizeDraw(row, format) {
+    const issue = normalizeIssue(row?.id);
+    if (format.issueDate && !format.issueDate(issue)) {
+      throw new Error("开奖接口返回的期号无效。");
+    }
+    const { numbers, drawTime } = row;
+    const { positions, min, max, unique } = format;
+    if (!Array.isArray(numbers) || numbers.length !== positions
+      || numbers.some((number) => !Number.isInteger(number) || number < min || number > max)
+      || (unique && new Set(numbers).size !== positions)) {
+      throw new Error("第 " + issue + " 期的号码不符合此盘口格式。");
+    }
+    if (typeof drawTime !== "string" || !/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(drawTime)) {
+      throw new Error("第 " + issue + " 期的开奖时间格式无效。");
+    }
+    return { issue, draw: { id: String(issue), numbers, drawTime } };
+  }
+
+  function parseDraw(row, format, lotCode) {
+    if (!row || typeof row !== "object" || Array.isArray(row)) {
+      throw new Error("开奖接口返回的记录格式无效。");
+    }
+    verifyLottery(row, lotCode);
+    const fields = typeof row.preDrawCode === "string" ? row.preDrawCode.split(",") : [];
+    const numbers = fields.map((field) => {
+      const value = field.trim();
+      return /^\d{1,2}$/.test(value) ? Number(value) : NaN;
+    });
+    return normalizeDraw({ id: row.preDrawIssue, numbers, drawTime: row.preDrawTime }, format).draw;
+  }
+
+  function orderedDraws(draws, format) {
+    const byIssue = new Map();
+    for (const row of draws) {
+      const { issue, draw } = normalizeDraw(row, format);
+      const previous = byIssue.get(issue);
+      if (previous && previous.numbers.some((number, position) => number !== draw.numbers[position])) {
+        throw new Error("第 " + issue + " 期的两份开奖结果不一致。");
+      }
+      if (!previous) byIssue.set(issue, draw);
+    }
+    return Array.from(byIssue.entries()).sort(([a], [b]) => a < b ? -1 : 1);
+  }
+
+  function forGame(game) {
+    const { format, provider } = game;
+    const lotCode = String(provider.lotCode);
+
+    function parseSite168Draw(row) {
+      if (!row || typeof row !== "object") throw new Error("开奖接口没有返回已开奖期号。");
+      const numbers = Array.from({ length: format.positions }, (_, index) => {
+        const digit = row["ball_" + (index + 1)];
+        return /^\d{1,2}$/.test(digit) ? Number(digit) : NaN;
+      });
+      return normalizeDraw({ id: row.issue, numbers, drawTime: row.draw_time }, format).draw;
+    }
+
+    function site168Data(payload, metadata) {
+      const { data } = payload ?? {};
+      if (String(payload?.code) !== "0" || metadata?.lottery_code !== provider.code
+        || Number(metadata.ball_count) !== format.positions || !data) {
+        throw new Error("168开奖网没有返回此盘口的有效结果。");
+      }
+      return data;
+    }
+
+    function parseSite168History(payload) {
+      const data = site168Data(payload, payload?.data?.lottery);
+      if (!Array.isArray(data.draws) || typeof data.has_more !== "boolean") {
+        throw new Error("168开奖网的历史分页格式无效。");
+      }
+      return { draws: data.draws.map(parseSite168Draw), hasMore: data.has_more };
+    }
+
+    function parseLatest(payload) {
+      if (provider.proxyPath) {
+        const data = site168Data(payload, payload?.data);
+        return parseSite168Draw(data.latest_draw);
+      }
+      return parseDraw(verifyEnvelope(payload, lotCode), format, lotCode);
+    }
+
+    function parseHistory(payload) {
+      if (provider.proxyPath) return parseSite168History(payload).draws;
+      const data = verifyEnvelope(payload, lotCode);
+      if (!Array.isArray(data)) throw new Error("开奖接口返回的历史列表格式无效。");
+      return orderedDraws(data.map((row) => parseDraw(row, format, lotCode)), format).map(([, draw]) => draw);
+    }
+
+    function consecutive(previous, current) {
+      return format.consecutive
+        ? format.consecutive(previous, current)
+        : normalizeIssue(current.id) === normalizeIssue(previous.id) + 1n;
+    }
+
+    function mergeDraws(current, incoming) {
+      const ordered = orderedDraws([...current, ...incoming], format).map(([, draw]) => draw);
+      let start = Math.max(0, ordered.length - 1);
+      // Preserve only the continuous run ending at the newest confirmed issue.
+      while (start > 0 && consecutive(ordered[start - 1], ordered[start])) start--;
+      return ordered.slice(start);
+    }
+
+    function latestConsecutive(draws) {
+      return mergeDraws([], draws);
+    }
+
+    function sortDraws(draws) {
+      return orderedDraws(draws, format).map(([, draw]) => draw);
+    }
+
+    return { parseLatest, parseHistory, parseSite168History, mergeDraws, latestConsecutive, consecutive, sortDraws };
+  }
+
+  globalThis.TrackLive = { ...forGame(globalThis.TrackGames?.defaultGame ?? defaultGame), forGame };
+})();
+</script>
+  <script>(function () {
+  "use strict";
+
+  const defaultGame = {
+    format: { positions: 10, min: 1, max: 10, unique: true },
+    provider: {
+      base: "https://api.api68.com/",
+      lotCode: "10037",
+      latestPath: "pks/getLotteryPksInfo.do",
+      historyPath: "pks/getPksHistoryList.do",
+    },
+  };
+  const pollMs = 15000;
+  const timeoutMs = 8000;
+  const desiredHistory = 600;
+  const maxHistory = 620;
+
+  function previousDate(date) {
+    const midnight = Date.parse(date + "T00:00:00Z");
+    return new Date(midnight - 86400000).toISOString().slice(0, 10);
+  }
+
+  function beijingTime(value) {
+    if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value)) return NaN;
+    return Date.parse(value.replace(" ", "T") + "+08:00");
+  }
+
+  function isNextIssue(api, latest, { targetIssue, scheduledAt } = {}) {
+    if (!latest || !/^\d+$/.test(targetIssue) || BigInt(targetIssue) <= 0n) return false;
+    const drawTime = Number.isFinite(scheduledAt)
+      ? new Date(scheduledAt + 8 * 60 * 60 * 1000).toISOString().slice(0, 19).replace("T", " ")
+      : undefined;
+    return api.consecutive(latest, { id: String(targetIssue), drawTime });
+  }
+
+  function site168Upcoming(game, data, latest, scheduledAt) {
+    const { provider, format } = game;
+    const issue = globalThis.TrackGames.datedIssue(latest.id);
+    if (!issue || !Number.isFinite(scheduledAt) || data.market_status !== "open") return undefined;
+    // The provider's report day switches at 06:00 Beijing time.
+    const targetDate = new Date(scheduledAt + 2 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const tolerance = 10_000;
+    if (issue.date === targetDate && issue.sequence < format.issuesPerDay) {
+      const interval = scheduledAt - beijingTime(latest.drawTime);
+      if (Math.abs(interval - provider.intervalSeconds * 1000) <= tolerance) return BigInt(latest.id) + 1n;
+    }
+    if (issue.sequence === format.issuesPerDay && targetDate !== issue.date) {
+      const expectedOpening = beijingTime(targetDate + " " + provider.firstDraw);
+      if (Math.abs(scheduledAt - expectedOpening) <= tolerance) return targetDate.replaceAll("-", "") + "001";
+    }
+    return undefined;
+  }
+
+  function upcomingDraw(game, api, payload, latest, fetchedAt) {
+    const isProxy = Boolean(game.provider.proxyPath);
+    const data = isProxy ? payload.data : payload.result.data;
+    const scheduledAt = beijingTime(isProxy ? data.next_draw_time : data.drawTime);
+    const serverTime = isProxy ? fetchedAt : beijingTime(data.serverTime);
+    const target = String(isProxy ? site168Upcoming(game, data, latest, scheduledAt) : data.drawIssue);
+    if (!isNextIssue(api, latest, { targetIssue: target, scheduledAt })
+      || !Number.isFinite(serverTime) || !(scheduledAt > serverTime && scheduledAt > Date.now())) {
+      return { targetIssue: null, scheduledAt: null, serverTime: null };
+    }
+    return { targetIssue: target, scheduledAt, serverTime };
+  }
+
+  async function fetchJson(url, signal) {
+    const request = new AbortController();
+    const abort = () => request.abort();
+    signal?.addEventListener("abort", abort, { once: true });
+    if (signal?.aborted) abort();
+    const timeout = setTimeout(abort, timeoutMs);
+    try {
+      const response = await fetch(url, {
+        cache: "no-store",
+        credentials: "omit",
+        signal: request.signal,
+      });
+      if (!response.ok) throw new Error("开奖接口返回 " + response.status);
+      const payload = await response.json();
+      const workerTime = Number(response.headers.get("X-Track-Fetched-At"));
+      const dateTime = Date.parse(response.headers.get("Date"));
+      const fetchedAt = workerTime > 0 ? workerTime : Number.isFinite(dateTime) ? dateTime : Date.now();
+      return { payload, fetchedAt };
+    } finally {
+      clearTimeout(timeout);
+      signal?.removeEventListener("abort", abort);
+    }
+  }
+
+  async function historyBefore(getDrawsOn, date, anchor, signal) {
+    return (await getDrawsOn(date, signal)).filter((row) => BigInt(row.id) <= anchor);
+  }
+
+  async function extendHistory(api, getDrawsOn, historyDate, historyDays, draws, required, signal) {
+    if (!draws.length || draws.length >= required) return draws;
+    let records = draws;
+    const anchor = BigInt(draws.at(-1).id);
+    let date = historyDate(draws[0]);
+    for (let day = 0; day < historyDays && records.length < required; day++) {
+      records = api.mergeDraws(records, await historyBefore(getDrawsOn, date, anchor, signal));
+      date = previousDate(date);
+    }
+    return records.slice(-required);
+  }
+
+  function create(game, api, latestUrl, getDrawsOn, historyDate, { onData, onStatus, onLatest = () => {} }) {
+    let enabled = false;
+    let draws = [];
+    let delivered = null;
+    let timer = null;
+    let cycle = null;
+
+    function status(state, message) {
+      onStatus({ state, message, enabled });
+    }
+
+    function isCurrent(run) {
+      return enabled && cycle === run && !run.signal.aborted;
+    }
+
+    function cancelPending() {
+      clearTimeout(timer);
+      timer = null;
+      if (cycle) cycle.abort();
+      cycle = null;
+    }
+
+    function publish(records) {
+      const last = records.at(-1);
+      const prev = delivered?.at(-1);
+      draws = records.slice(-maxHistory);
+      if (delivered?.length === draws.length && prev?.id === last.id && prev.drawTime === last.drawTime) return;
+      delivered = draws;
+      onData(draws);
+    }
+
+    async function update(run) {
+      let latest;
+      let records;
+      let payload;
+      let fetchedAt;
+      const previous = draws.at(-1);
+      try {
+        ({ payload, fetchedAt } = await fetchJson(latestUrl, run.signal));
+        latest = api.parseLatest(payload);
+        if (!isCurrent(run)) return;
+        if (previous && BigInt(latest.id) < BigInt(previous.id)) {
+          status("stale", "接口期号落后 · 等待追上");
+          return;
+        }
+        records = api.mergeDraws(draws, [latest]);
+      } catch {
+        if (isCurrent(run)) status("stale", "暂未取到最新开奖 · 自动重试");
+        return;
+      }
+
+      let goalReached = records.length >= desiredHistory;
+      let hadHistoryError = false;
+      if (!goalReached) {
+        let date = historyDate(latest);
+        const retrieved = [latest];
+        for (let day = 0; day < (game.bootstrapDays ?? 2); day++, date = previousDate(date)) {
+          try {
+            const dayRows = await historyBefore(getDrawsOn, date, BigInt(latest.id), run.signal);
+            if (!isCurrent(run)) return;
+            // The history response can arrive after the next draw. Anchor this cycle to the latest response.
+            records = api.mergeDraws(draws, [...retrieved, ...dayRows]);
+            retrieved.push(...dayRows);
+            goalReached = records.length >= desiredHistory;
+            if (goalReached) break;
+          } catch {
+            if (!isCurrent(run)) return;
+            hadHistoryError = true;
+          }
+        }
+      }
+
+      if (!isCurrent(run)) return;
+      if (previous && !goalReached && !records.some((row) => row.id === previous.id)) {
+        onLatest({ targetIssue: null, scheduledAt: null, serverTime: null, draws: records });
+        status("stale", `检测到缺期 · 保留此前连续 ${draws.length} 期`);
+        return;
+      }
+      publish(records);
+      const upcoming = upcomingDraw(game, api, payload, latest, fetchedAt);
+      onLatest({ ...upcoming, draws: records });
+      const drawAt = beijingTime(latest.drawTime);
+      if (!upcoming.targetIssue && Date.now() - drawAt > 5 * 60 * 1000) {
+        status("stale", "数据源最新开奖较早 · 继续检查");
+      } else if (goalReached) {
+        status("live", "自动更新 · 每 15 秒检查");
+      } else {
+        const count = `当前连续 ${draws.length} 期`;
+        status("partial", hadHistoryError ? `${count} · 历史暂不可用，自动重试` : `${count} · 继续补齐历史`);
+      }
+    }
+
+    function poll() {
+      if (!enabled || document.hidden || cycle) return;
+      clearTimeout(timer);
+      timer = null;
+      const run = new AbortController();
+      const started = Date.now();
+      cycle = run;
+      update(run).catch(() => {
+        if (isCurrent(run)) status("stale", "开奖同步中断 · 自动重试");
+      }).finally(() => {
+        if (!isCurrent(run)) return;
+        cycle = null;
+        if (!document.hidden) timer = setTimeout(poll, Math.max(0, pollMs - (Date.now() - started)));
+      });
+    }
+
+    function handleVisibility() {
+      if (document.hidden) cancelPending();
+      else poll();
+    }
+
+    return {
+      start() {
+        if (enabled) return;
+        enabled = true;
+        delivered = null;
+        if (game.provider.proxyPath && globalThis.location?.protocol === "file:") {
+          status("stale", "请打开在线站点连接此盘口");
+          return;
+        }
+        document.addEventListener("visibilitychange", handleVisibility);
+        status("connecting", "正在连接开奖数据源…");
+        poll();
+      },
+      pause(message = "实时更新已暂停") {
+        enabled = false;
+        cancelPending();
+        document.removeEventListener("visibilitychange", handleVisibility);
+        status("paused", message);
+      },
+      get enabled() { return enabled; },
+    };
+  }
+
+  function forGame(game) {
+    const api = globalThis.TrackLive.forGame(game);
+    const { base, lotCode, latestPath, historyPath, code, proxyPath } = game.provider;
+    const query = "?lotCode=" + encodeURIComponent(lotCode);
+    const proxyUrl = (action, extras = {}) => proxyPath + "?" + new URLSearchParams({ game: code, action, ...extras });
+    const latestUrl = proxyPath ? proxyUrl("latest") : new URL(latestPath + query, base);
+    const historyUrl = proxyPath ? null : new URL(historyPath + query, base);
+    const historyDate = (draw) => game.format.issueDate?.(draw.id) ?? draw.drawTime.slice(0, 10);
+
+    async function getSite168History(date, signal) {
+      const draws = [];
+      const pageSize = 50;
+      const offsetLimit = game.format.issuesPerDay + pageSize;
+      for (let offset = 0; offset < offsetLimit; offset += pageSize) {
+        const { payload } = await fetchJson(proxyUrl("history", { date, offset }), signal);
+        const page = api.parseSite168History(payload);
+        if (page.draws.some((draw) => historyDate(draw) !== date)
+          || (page.hasMore && page.draws.length !== pageSize)) {
+          throw new Error("168开奖网历史期号与请求日期不符。");
+        }
+        draws.push(...page.draws);
+        if (!page.hasMore) return api.sortDraws(draws);
+      }
+      throw new Error("168开奖网的历史分页超出此盘口支持的期数。");
+    }
+
+    async function getDrawsOn(date, signal) {
+      if (proxyPath) return getSite168History(date, signal);
+      const url = new URL(historyUrl);
+      url.searchParams.set("date", date);
+      const { payload } = await fetchJson(url, signal);
+      return api.parseHistory(payload);
+    }
+
+    return {
+      create: (options) => create(game, api, latestUrl, getDrawsOn, historyDate, options),
+      extendHistory: (draws, required, signal) => extendHistory(api, getDrawsOn, historyDate, game.historyDays ?? 3, draws, required, signal),
+      getDrawsOn,
+      mergeDraws: api.mergeDraws,
+      isNextIssue: (latest, snapshot) => isNextIssue(api, latest, snapshot),
+      issueDate: game.format.issueDate,
+    };
+  }
+
+  globalThis.TrackLiveController = { ...forGame(globalThis.TrackGames?.defaultGame ?? defaultGame), forGame };
+})();
+</script>
+  <script>(function () {
+  "use strict";
+
+  const ledgerName = "track-lab-combo-ledger";
+  const activationKey = "enabled";
+  const latestConfirmedKey = "latestConfirmedIssue";
+  const clearedThroughKey = "clearedThroughIssue";
+
+  function createLedger(databaseName, engine) {
+    let opening;
+
+    function open() {
+      if (opening) return opening;
+
+      opening = new Promise((resolve, reject) => {
+        if (!globalThis.indexedDB) {
+          reject(new Error("此浏览器无法打开模拟账本存储。"));
+          return;
+        }
+
+        const request = indexedDB.open(databaseName, 1);
+        request.onupgradeneeded = () => {
+          const database = request.result;
+          database.createObjectStore("meta");
+          database.createObjectStore("rows").createIndex("status", "status");
+        };
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+          const database = request.result;
+          database.onversionchange = () => {
+            database.close();
+            opening = undefined;
+          };
+          database.onclose = () => { opening = undefined; };
+          resolve(database);
+        };
+      }).catch((error) => {
+        opening = undefined;
+        throw error;
+      });
+      return opening;
+    }
+
+    async function transact(stores, mode, execute) {
+      const database = await open();
+      return new Promise((resolve, reject) => {
+        const transaction = database.transaction(stores, mode);
+        let result;
+        let failure;
+
+        // IDB requests must be queued while the transaction is active.
+        function check(work) {
+          try {
+            work();
+          } catch (error) {
+            failure = error;
+            transaction.abort();
+          }
+        }
+
+        transaction.oncomplete = () => resolve(result);
+        transaction.onabort = () => reject(failure ?? transaction.error ?? new Error("模拟账本事务已中止。"));
+        const store = (name) => transaction.objectStore(name);
+        const receive = (request, work) => {
+          request.onsuccess = () => check(() => work(request.result));
+        };
+        const returnValue = (value) => { result = value; };
+        check(() => execute(store, receive, returnValue));
+      });
+    }
+
+    function issueKey(issue) {
+      if (!/^\d+$/.test(issue)) throw new Error("模拟账本期号必须由数字组成。");
+      return BigInt(issue).toString();
+    }
+
+    function greatestIssue(keys, greatest = null) {
+      for (const key of keys) {
+        const issue = BigInt(key);
+        if (greatest === null || issue > greatest) greatest = issue;
+      }
+      return greatest;
+    }
+
+    function read() {
+      return transact(["meta", "rows"], "readonly", (store, receive, returnValue) => {
+        const snapshot = { enabled: false, rows: [], clearedThrough: null };
+        const meta = store("meta");
+        receive(meta.get(activationKey), (enabled) => { snapshot.enabled = enabled === true; });
+        receive(meta.get(clearedThroughKey), (issue) => { snapshot.clearedThrough = issue ?? null; });
+        receive(store("rows").getAll(), (rows) => {
+          snapshot.rows = rows.sort((left, right) => {
+            const first = BigInt(left.issue);
+            const second = BigInt(right.issue);
+            return first < second ? -1 : first > second ? 1 : 0;
+          });
+        });
+        returnValue(snapshot);
+      });
+    }
+
+    function setEnabled(enabled) {
+      return transact(["meta"], "readwrite", (store, receive, returnValue) => {
+        const value = enabled === true;
+        store("meta").put(value, activationKey);
+        returnValue(value);
+      });
+    }
+
+    async function clear(throughIssue) {
+      let cutoff = throughIssue == null ? null : BigInt(issueKey(throughIssue));
+      return transact(["meta", "rows"], "readwrite", (store, receive, returnValue) => {
+        const meta = store("meta");
+        const rows = store("rows");
+        // Include plans inserted by other tabs before this transaction acquired the stores.
+        receive(rows.getAllKeys(), (keys) => { cutoff = greatestIssue(keys, cutoff); });
+        receive(meta.get(clearedThroughKey), (previous) => {
+          if (previous !== undefined && (cutoff === null || BigInt(previous) > cutoff)) cutoff = BigInt(previous);
+          const value = cutoff?.toString() ?? null;
+          if (value !== null && value !== previous) meta.put(value, clearedThroughKey);
+          rows.clear();
+          returnValue(value);
+        });
+      });
+    }
+
+    async function record(plan, { scheduledAt, previousIssue } = {}) {
+      const key = issueKey(plan.issue);
+      const issue = BigInt(key);
+      const expected = previousIssue == null ? previousIssue : BigInt(issueKey(previousIssue));
+      const snapshot = structuredClone(plan);
+      return transact(["meta", "rows"], "readwrite", (store, receive, returnValue) => {
+        const rows = store("rows");
+        const meta = store("meta");
+        let current;
+        let enabled;
+        let confirmed;
+        receive(rows.get(key), (row) => { current = row; });
+        receive(meta.get(activationKey), (value) => { enabled = value; });
+        receive(meta.get(latestConfirmedKey), (value) => { confirmed = value; });
+        receive(meta.get(clearedThroughKey), (clearedThrough) => {
+          if (current) {
+            returnValue(current);
+            return;
+          }
+
+          if (enabled !== true || (confirmed !== undefined && BigInt(confirmed) >= issue)
+            || (clearedThrough !== undefined && BigInt(clearedThrough) >= issue)) {
+            returnValue(null);
+            return;
+          }
+
+          // A concurrent insert or clear can invalidate the row used to calculate the next stake.
+          let latest;
+          if (expected !== undefined) {
+            receive(rows.getAllKeys(), (keys) => { latest = greatestIssue(keys); });
+          }
+          receive(rows.index("status").getAllKeys("pending"), (pending) => {
+            const createdAt = Date.now();
+            if ((scheduledAt !== undefined && !(scheduledAt > createdAt))
+              || pending.some((pendingKey) => BigInt(pendingKey) < issue)
+              || (expected !== undefined && (latest !== expected || (latest !== null && latest >= issue)))) {
+              returnValue(null);
+              return;
+            }
+
+            const row = { ...snapshot, createdAt, status: "pending" };
+            if (scheduledAt !== undefined) row.scheduledAt = scheduledAt;
+            if (row.bets === 0) {
+              Object.assign(row, {
+                status: "skipped", hits: 0, returns: 0, profit: 0, results: [],
+                nextStep: row.step ?? 0, nextCapped: row.capped === true,
+              });
+            }
+            rows.add(row, key);
+            returnValue(row);
+          });
+        });
+      });
+    }
+
+    async function settle(draws) {
+      const actuals = new Map();
+      let latest = 0n;
+      for (const draw of draws) {
+        const key = issueKey(draw.id);
+        actuals.set(key, draw);
+        const issue = BigInt(key);
+        if (issue > latest) latest = issue;
+      }
+      if (!actuals.size) return [];
+
+      return transact(["meta", "rows"], "readwrite", (store, receive, returnValue) => {
+        const meta = store("meta");
+        const rows = store("rows");
+        // A confirmed issue closes the recording window for every tab on this origin.
+        receive(meta.get(latestConfirmedKey), (confirmed) => {
+          if (confirmed === undefined || latest > BigInt(confirmed)) meta.put(latest.toString(), latestConfirmedKey);
+        });
+        receive(rows.index("status").getAll("pending"), (pending) => {
+          const settled = [];
+          for (const plan of pending) {
+            const key = issueKey(plan.issue);
+            const actual = actuals.get(key);
+            if (!actual) continue;
+
+            const row = { ...engine.settleCombo(plan, actual), settledAt: Date.now() };
+            rows.put(row, key);
+            settled.push(row);
+          }
+          returnValue(settled);
+        });
+      });
+    }
+
+    return { read, setEnabled, record, settle, clear };
+  }
+
+  const speedLedger = createLedger(ledgerName, globalThis.TrackLab);
+  const games = new Map([["speed", speedLedger]]);
+  speedLedger.forGame = function forGame(id, engine = globalThis.TrackLab) {
+    if (typeof id !== "string" || !/^[a-z][a-z0-9-]*$/.test(id)) throw new Error("盘口标识无效。");
+    if (!games.has(id)) games.set(id, createLedger(`${ledgerName}-${id}`, engine));
+    return games.get(id);
+  };
+  globalThis.TrackComboLedger = speedLedger;
+})();
+</script>
+  <script>(function () {
+  "use strict";
+
+  const replayLimit = 500;
+  const recordLimits = [50, 100, 200, replayLimit];
+  const recordLimitKey = "track-lab-combo-record-limit";
+  const pageSize = 20;
+  const durationToRetryHistory = 30000;
+  const decimals = new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 });
+  const signedDecimals = new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2, signDisplay: "exceptZero" });
+  const strategyNames = { fixed: "固定金额", martingale: "马丁格尔", fibonacci: "斐波那契" };
+
+  function node(tag, className, content) {
+    const element = document.createElement(tag);
+    if (className) element.className = className;
+    if (content !== undefined) element.textContent = content;
+    return element;
+  }
+
+  function money(cents, signed = false) {
+    const amount = BigInt(cents);
+    const sign = amount < 0n ? "-" : signed && amount > 0n ? "+" : "";
+    const absolute = amount < 0n ? -amount : amount;
+    const remainder = (absolute % 100n).toString().padStart(2, "0").replace(/0+$/, "");
+    const fraction = remainder ? "." + remainder : "";
+    return `${sign}${decimals.format(absolute / 100n)}${fraction} 元`;
+  }
+
+  function tone(amount) {
+    if (amount > 0) return "positive";
+    if (amount < 0) return "negative";
+    return "";
+  }
+
+  function metric(label, value, className) {
+    const element = node("div", "combo-metric");
+    element.append(node("span", "", label), node("strong", className, value));
+    return element;
+  }
+
+  function metrics(engine, rows, pending, isLive, reset) {
+    const stats = engine.summarizeCombo(rows);
+    return [
+      metric("已结算期数", decimals.format(rows.filter((row) => row.status !== "pending").length)),
+      metric("有投入期数", decimals.format(stats.played)),
+      metric("命中期数", decimals.format(stats.winning)),
+      metric("盈利期数", decimals.format(stats.profitable)),
+      metric("总投入", money(stats.cost)),
+      metric("总返还", money(stats.returns)),
+      metric("净盈亏", money(stats.profit, true), tone(stats.profit)),
+      metric("ROI", stats.roi === null ? "—" : signedDecimals.format(stats.roi) + "%", tone(stats.roi)),
+      metric("最长连续未中", decimals.format(stats.longestMisses) + " 期"),
+      metric("该段最高单注金额", money(stats.streakMaxStake)),
+      metric("该段最高整期投入", money(stats.streakMaxCost)),
+      metric("最高单期投入", money(stats.maxCost)),
+      ...(reset === "profit" ? [metric("最长连续净亏", decimals.format(stats.longestLosses) + " 期")] : []),
+      ...(isLive ? [metric("待开奖投入", money(pending))] : []),
+    ];
+  }
+
+  function formatIssue(row) {
+    return String(row.issue);
+  }
+
+  function drawClock(epoch) {
+    return new Date(epoch + 8 * 60 * 60 * 1000).toISOString().slice(0, 19).replace("T", " ");
+  }
+
+  function roiRange(settings) {
+    const lower = decimals.format(settings.threshold);
+    return settings.thresholdMax == null ? `≥ ${lower}%`
+      : `${lower}% 至 ${decimals.format(settings.thresholdMax)}%（含端点）`;
+  }
+
+  function comboLimit(settings) {
+    if (settings.maxCandidatesPerPosition != null) return ` · 每个位置最多 ${settings.maxCandidatesPerPosition} 个候选号`;
+    return settings.maxComboPositions == null ? "" : ` · 车位上限 ${settings.maxComboPositions}`;
+  }
+
+  function baseStake(settings) {
+    return Math.round((settings.comboStake ?? 10) * 100);
+  }
+
+  function stakeLimit(settings) {
+    return settings.comboMaxCost == null ? "" : ` · 单期上限 ${money(Math.round(settings.comboMaxCost * 100))}`;
+  }
+
+  function strategy(settings) {
+    const method = settings.comboProgression ?? "fixed";
+    const reset = settings.comboReset === "profit" ? "净盈利后恢复" : "命中后恢复";
+    const capAction = settings.comboCapAction === "capped" ? "超限按上限均摊" : "超限回到基础档";
+    const policy = method !== "fixed" && settings.comboMaxCost != null ? ` · ${capAction}` : "";
+    return `${strategyNames[method]} · 基础单号 ${money(baseStake(settings))}${method === "fixed" ? "" : " · " + reset}${stakeLimit(settings)}${policy}`;
+  }
+
+  function progressionAction(row) {
+    if (row.nextStep == null || row.status === "pending") return "";
+    const step = row.step ?? 0;
+    const hitAtLoss = row.settings.comboReset === "profit" && row.status === "hit" && row.profit < 0;
+    if (row.nextCapped) {
+      if (row.status === "skipped") return "本期跳过，保留按上限均摊状态。";
+      return hitAtLoss ? "本期命中但整单净亏，下期继续按上限均摊。" : "下期继续按上限均摊。";
+    }
+    if (row.status === "skipped") return `本期跳过，保留第 ${row.nextStep + 1} 档。`;
+    if (row.capped) return row.settings.comboReset === "profit"
+      ? "本期净盈利，退出按上限均摊，下期恢复基础金额。"
+      : "本期命中，退出按上限均摊，下期恢复基础金额。";
+    if ((row.settings.comboProgression ?? "fixed") === "fixed") return "下期继续使用基础金额。";
+    if (row.nextStep > step) return `下期升至第 ${row.nextStep + 1} 档。`;
+    if (row.nextStep === 0 && (row.settings.comboReset === "profit" ? row.profit > 0 : row.status === "hit")) {
+      return row.settings.comboReset === "profit" ? "本期净盈利，下期恢复基础金额。" : "本期命中，下期恢复基础金额。";
+    }
+    if (hitAtLoss) return `本期命中但整单净亏，下期保持第 ${row.nextStep + 1} 档。`;
+    return `本期保本，下期保持第 ${row.nextStep + 1} 档。`;
+  }
+
+  function capDetail(row) {
+    const cap = money(Math.round(row.settings.comboMaxCost * 100));
+    const projected = money(row.projectedCost);
+    const actual = money(row.cost);
+    if (row.capApplied === "reset") {
+      const result = row.skipReason === "stake_limit"
+        ? "本期回到基础档，仍超过上限，整期跳过。"
+        : "本期回到基础档计算。";
+      return `原计划投入 ${projected}，超过单期上限 ${cap}。${result}实际投入 ${actual}。`;
+    }
+    if (row.capApplied === "capped") {
+      const result = row.skipReason === "stake_limit"
+        ? "上限不足以给每注分配至少 0.01 元，整期跳过。"
+        : `按单期上限 ${cap} 均摊，每注 ${money(row.stakeCents)}。`;
+      return `原计划投入 ${projected}。${result}实际投入 ${actual}。`;
+    }
+    return `本期预计投入 ${projected}，超过单期上限 ${cap}，整期跳过。实际投入 ${actual}。`;
+  }
+
+  function readRecordLimit() {
+    try {
+      const limit = Number(localStorage.getItem(recordLimitKey));
+      if (recordLimits.includes(limit)) return limit;
+    } catch {
+      // The control is usable without browser storage.
+    }
+    return replayLimit;
+  }
+
+  function describeRecorded(row) {
+    let result = row.status === "skipped" ? "已跳过" : "已记录";
+    if (row.skipReason === "position_limit") result = `超过车位上限（${row.qualifiedCount} > ${row.settings.maxComboPositions}），已跳过`;
+    if (row.skipReason === "candidate_limit") result = "达标位置的候选号均超限，已跳过";
+    if (row.skipReason === "stake_limit") result = "超过单期投入上限，已跳过";
+    if (row.status !== "skipped" && row.capApplied === "reset") result = "回到基础档，已记录";
+    if (row.status !== "skipped" && row.capApplied === "capped") result = "按上限均摊，已记录";
+    return `第 ${row.issue} 期${result} · ROI 评估 ${row.evaluated}/${row.settings.window} 期`;
+  }
+
+  function buildRow(engine, row, open) {
+    const labels = { pending: "待开奖", hit: "命中", miss: "未中", skipped: "跳过" };
+    const details = node("details", "combo-row");
+    details.dataset.issue = formatIssue(row);
+    details.open = open;
+    const summary = node("summary");
+    const exceedsLimit = ["position_limit", "candidate_limit", "stake_limit"].includes(row.skipReason);
+    const result = exceedsLimit ? "超限跳过" : labels[row.status] ?? row.status;
+    const status = node("span", "combo-outcome", result);
+    status.dataset.status = row.status;
+    const profit = node("span", "combo-profit", row.profit === undefined ? "—" : money(row.profit, true));
+    if (tone(row.profit)) profit.classList.add(tone(row.profit));
+    summary.append(
+      node("span", "combo-issue", formatIssue(row)),
+      status,
+      node("span", "combo-units", money(row.cost)),
+      node("span", "combo-payout", row.returns === undefined ? "—" : money(row.returns)),
+      profit,
+    );
+    const body = node("div", "combo-detail");
+    const { settings, bets } = row;
+    const amount = money(engine.comboRowStakeCents(row));
+    body.append(
+      node("p", "combo-plan-meta", `回看 ${settings.lookback} 期 · ROI 评估 ${row.evaluated}/${settings.window} 期 · ROI ${roiRange(settings)}${comboLimit(settings)} · 单号 ${amount} · 返还 ${settings.odds} 倍 · ${bets} 注`),
+      node("p", "combo-strategy-meta", `${strategy(settings)} · 第 ${(row.step ?? 0) + 1} 档`),
+    );
+    const picks = row.results ?? row.picks;
+    if (row.skipReason === "position_limit") {
+      body.append(node("p", "combo-inactive", `本期有 ${row.qualifiedCount} 个车位达标，超过 ${settings.maxComboPositions} 个车位的上限（${row.qualifiedCount} > ${settings.maxComboPositions}），整期跳过。`));
+    } else if (row.skipReason === "candidate_limit") {
+      body.append(node("p", "combo-inactive", "所有达标位置的候选号均超出上限，本期跳过。"));
+    } else if (row.skipReason === "stake_limit" || row.capApplied) {
+      body.append(node("p", row.skipReason === "stake_limit" ? "combo-inactive" : "combo-cap-result", capDetail(row)));
+    } else if (!picks.length) {
+      body.append(node("p", "combo-inactive", "本期没有达标车位。"));
+    }
+    if (row.excludedPositions?.length) {
+      const excluded = row.excludedPositions.map(({ d, position, candidateCount }) =>
+        `第 ${position} 位（追踪 ${d} 号，${candidateCount} 个候选号）`).join("、");
+      body.append(node("p", "combo-excluded", `候选号超限，排除${excluded}。`));
+    }
+    const action = progressionAction(row);
+    if (action) body.append(node("p", "combo-progression-action", action));
+    for (const pick of picks) {
+      const line = node("div", "combo-pick");
+      const candidates = node("span", "candidate-list");
+      candidates.append(...pick.candidates.map((value) => node("span", "candidate", value)));
+      line.append(node("strong", "", `第 ${pick.position} 位`), node("span", "combo-pick-tracker", `追踪 ${pick.d} 号`), candidates);
+      if (pick.actual !== undefined) {
+        line.append(node("span", pick.hit ? "positive" : "", `开 ${pick.actual}${pick.hit ? " · 命中" : ""}`));
+      }
+      body.append(line);
+    }
+    details.append(summary, body);
+    return details;
+  }
+
+  function create() {
+    const byId = (id) => document.getElementById(id);
+    const elements = {
+      modeGroup: byId("combo-mode"),
+      toggle: byId("combo-toggle"),
+      clear: byId("combo-clear"),
+      status: byId("combo-status"),
+      summary: byId("combo-summary"),
+      rows: byId("combo-rows"),
+      hint: byId("combo-hint"),
+      more: byId("combo-more"),
+    };
+    const { modeGroup, toggle, clear, rows, more } = elements;
+    const recordRange = byId("combo-range");
+    const clearDialog = byId("combo-clear-dialog");
+    const clearCancel = byId("combo-clear-cancel");
+    const clearConfirm = byId("combo-clear-confirm");
+    const games = new Map();
+    let activeId;
+    let clearOwner;
+    let clearBusy = false;
+    let recordLimit = readRecordLimit();
+
+    const current = () => games.get(activeId);
+    const getRecordLimit = () => recordLimit;
+
+    function renderRecordLimit() {
+      for (const button of recordRange?.querySelectorAll("[data-combo-limit]") ?? []) {
+        button.setAttribute("aria-pressed", String(Number(button.dataset.comboLimit) === recordLimit));
+      }
+    }
+
+    recordRange?.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-combo-limit]");
+      const limit = Number(button?.dataset.comboLimit);
+      if (!recordLimits.includes(limit) || limit === recordLimit) return;
+      recordLimit = limit;
+      try {
+        localStorage.setItem(recordLimitKey, String(limit));
+      } catch {
+        // Keep the current in-page choice when storage is unavailable.
+      }
+      renderRecordLimit();
+      current()?.render();
+    });
+    renderRecordLimit();
+
+    function forGame({ id, engine, feed, ledger }) {
+      if (!games.has(id)) {
+        if (activeId === undefined) activeId = id;
+        games.set(id, createGame(elements, { engine, feed, ledger }, () => activeId === id, getRecordLimit));
+      }
+      return games.get(id);
+    }
+
+    function selectGame(id) {
+      if (!games.has(id)) throw new Error("未找到对应的模拟盘口。");
+      if (activeId !== id) {
+        if (clearDialog.open && !clearBusy) clearDialog.close();
+        activeId = id;
+        rows.replaceChildren();
+      }
+      current().render();
+    }
+
+    modeGroup.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-combo-mode]");
+      if (button) current()?.selectView(button.dataset.comboMode);
+    });
+
+    more?.addEventListener("click", () => current()?.showMore());
+    toggle.addEventListener("click", () => {
+      if (!toggle.disabled) current()?.toggleTracking();
+    });
+    clear.addEventListener("click", () => {
+      if (clear.disabled || clearBusy || !current()) return;
+      clearOwner = current();
+      clearDialog.showModal();
+    });
+    clearCancel.addEventListener("click", () => {
+      if (!clearBusy) clearDialog.close();
+    });
+    clearDialog.addEventListener("cancel", (event) => {
+      if (clearBusy) event.preventDefault();
+    });
+    clearConfirm.addEventListener("click", async () => {
+      if (clearBusy || !clearOwner || !clearDialog.open) return;
+      const owner = clearOwner;
+      clearBusy = true;
+      clearConfirm.disabled = true;
+      clearCancel.disabled = true;
+      try {
+        await owner.clearLedger();
+      } finally {
+        clearBusy = false;
+        clearConfirm.disabled = false;
+        clearCancel.disabled = false;
+        clearDialog.close();
+        if (owner === current()) {
+          const focus = !clear.disabled ? clear : !toggle.disabled ? toggle : modeGroup.querySelector('[data-combo-mode="live"]');
+          focus?.focus({ preventScroll: true });
+        }
+      }
+    });
+
+    const speed = () => forGame({
+      id: "speed",
+      engine: globalThis.TrackLab,
+      feed: globalThis.TrackLiveController,
+      ledger: globalThis.TrackComboLedger,
+    });
+    return {
+      forGame,
+      selectGame,
+      update: (next) => speed().update(next),
+      onSnapshot: (snapshot) => speed().onSnapshot(snapshot),
+      setFeedStatus: (next) => speed().setFeedStatus(next),
+      pauseForSource: () => speed().pauseForSource(),
+    };
+  }
+
+  function createGame(elements, { engine, feed, ledger }, isActive, getRecordLimit) {
+    const { modeGroup, toggle, clear, status, summary, rows, hint, more } = elements;
+    const mergeDraws = feed.mergeDraws ?? globalThis.TrackLive.mergeDraws;
+    let view = "replay";
+    let shown = pageSize;
+    let lastRecordLimit = getRecordLimit();
+    let context;
+    let cachedHistory = [];
+    let historyFlight = null;
+    let historyAttempt;
+    let replayMemo;
+    let lastSnapshot;
+    let feedStatus;
+    let liveMessage = "";
+    let ledgerState = { enabled: false, rows: [] };
+    let ledgerPromise = Promise.resolve();
+    let ledgerLoaded = false;
+    let ledgerError = false;
+    let changingFollow = false;
+    let clearingLedger = false;
+    let clearNotice;
+    let stopVersion = 0;
+    const recoveryAttempts = new Map();
+
+    function setStatus(message, state) {
+      if (status.textContent !== message) status.textContent = message;
+      status.dataset.state = state;
+    }
+
+    function preserveOpen(rowData, emptyMessage) {
+      const open = new Set(Array.from(rows.querySelectorAll("[open][data-issue]"), (row) => row.dataset.issue));
+      const focused = document.activeElement?.closest("#combo-rows .combo-row")?.dataset.issue;
+      const selected = Array.from(rowData).reverse().slice(0, shown);
+      if (selected.length) {
+        rows.replaceChildren(...selected.map((row) => buildRow(engine, row, open.has(formatIssue(row)))));
+        if (focused) rows.querySelector(`[data-issue="${focused}"] > summary`)?.focus({ preventScroll: true });
+      } else {
+        rows.replaceChildren(node("p", "combo-empty", emptyMessage));
+      }
+      if (more) {
+        more.hidden = selected.length >= rowData.length;
+        more.textContent = `显示更多（${selected.length}/${rowData.length}）`;
+      }
+    }
+
+    function replayRows() {
+      if (replayMemo?.history !== cachedHistory || replayMemo?.settings !== context.settings) {
+        replayMemo = { history: cachedHistory, settings: context.settings, rows: engine.replayCombo(cachedHistory, context.settings, replayLimit) };
+      }
+      return replayMemo.rows;
+    }
+
+    function renderReplay() {
+      if (!isActive()) return;
+      const limit = getRecordLimit();
+      const history = replayRows().slice(-limit);
+      const { settings } = context;
+      summary.replaceChildren(...metrics(engine, history, 0, false, settings.comboReset));
+      preserveOpen(history, "暂无可回放的期次。");
+      const { window, lookback, maxCandidatesPerPosition } = settings;
+      const evaluated = history.map((row) => row.evaluated);
+      const actual = evaluated.length && Math.min(...evaluated) < window
+        ? ` 每期实际 ROI 评估 ${Math.min(...evaluated)}–${Math.max(...evaluated)} 期。`
+        : "";
+      hint.textContent = `按 ${window} 期窗口筛选 ROI ${roiRange(settings)} 的追踪号。每个位置最多 ${maxCandidatesPerPosition} 个候选号，超过上限就排除该位置。${actual} ${strategy(settings)}。`;
+      if (historyFlight) setStatus("正在补齐历史开奖…", "connecting");
+      else if (!history.length) setStatus(`可用开奖 ${cachedHistory.length} 期 · 至少需要 ${lookback + 2} 期连续开奖记录`, "partial");
+      else if (history.length < limit) setStatus(`可用开奖 ${cachedHistory.length} 期 · 已回放 ${history.length} 期`, "partial");
+      else setStatus(`已回放最近 ${limit} 期`, "ready");
+    }
+
+    function extendReplay() {
+      const { extendHistory } = feed;
+      if (context.dataMode !== "live" || !cachedHistory.length || historyFlight || !extendHistory) return;
+      const required = context.settings.lookback + context.settings.window + replayLimit;
+      if (cachedHistory.length >= required) return;
+      if (historyAttempt?.required >= required && Date.now() - historyAttempt.time < durationToRetryHistory) return;
+      const request = new AbortController();
+      const anchor = cachedHistory;
+      historyFlight = request;
+      historyAttempt = { required, time: Date.now() };
+      extendHistory(anchor, required, request.signal).then((extended) => {
+        if (historyFlight === request && context.dataMode === "live" && extended.length) {
+          cachedHistory = mergeDraws(extended, cachedHistory).slice(-1200);
+        }
+      }).catch(() => {
+        // The current continuous history remains available while the provider recovers.
+      }).finally(() => {
+        if (historyFlight !== request) return;
+        historyFlight = null;
+        if (view === "replay") renderReplay();
+      });
+    }
+
+    function renderLive() {
+      if (!isActive()) return;
+      const recent = ledgerState.rows.slice(-getRecordLimit());
+      const pending = recent.filter((row) => row.status === "pending");
+      const pendingCost = pending.reduce((sum, row) => engine.addComboCents(sum, row.cost), 0);
+      summary.replaceChildren(...metrics(engine, recent, pendingCost, true, context.settings.comboReset));
+      preserveOpen(recent, "暂无实时模拟记录。");
+      toggle.textContent = ledgerState.enabled ? "暂停跟踪" : "开始跟踪";
+      toggle.disabled = clearingLedger || changingFollow || !ledgerLoaded || (context.dataMode !== "live" && !ledgerState.enabled);
+      clear.disabled = clearingLedger || !ledgerLoaded || ledgerState.rows.length === 0;
+      const newest = pending.at(-1);
+      hint.textContent = newest
+        ? `第 ${newest.issue} 期已记录 ${newest.bets} 注，投入 ${money(newest.cost)}，等待开奖。该期 ROI ${roiRange(newest.settings)}${comboLimit(newest.settings)}。${strategy(newest.settings)}。`
+        : `下一期按 ROI ${roiRange(context.settings)} 筛选。每个位置最多 ${context.settings.maxCandidatesPerPosition} 个候选号，超限位置排除。${strategy(context.settings)}。`;
+      if (recent.length) hint.textContent += `本次统计 ${recent.length} 条账本记录。`;
+      if (clearingLedger) setStatus("正在清空实时账本…", "connecting");
+      else if (clearNotice) setStatus(clearNotice.message, clearNotice.state);
+      else if (ledgerError) setStatus("浏览器模拟账本暂不可用", "stale");
+      else if (!ledgerLoaded) setStatus("正在读取本地模拟账本…", "connecting");
+      else if (context.dataMode !== "live" || !feedStatus?.enabled) setStatus("连接真实开奖后可实时模拟", "paused");
+      else if (!ledgerState.enabled) setStatus("实时模拟已暂停", "paused");
+      else if (feedStatus?.state === "stale") setStatus("正在等待最新开奖", "stale");
+      else setStatus(liveMessage || "等待接口确认下一期", "ready");
+    }
+
+    function enqueueLedger(action) {
+      ledgerPromise = ledgerPromise.then(async () => {
+        try {
+          await action();
+          ledgerState = await ledger.read();
+          ledgerLoaded = true;
+          ledgerError = false;
+          if (clearNotice?.state === "ready" && ledgerState.rows.length) clearNotice = null;
+        } catch {
+          ledgerError = true;
+        }
+        if (view === "live" && context) renderLive();
+      });
+      return ledgerPromise;
+    }
+
+    function abortRecovery() {
+      for (const attempt of recoveryAttempts.values()) attempt.request?.abort();
+      recoveryAttempts.clear();
+    }
+
+    function recoverPending(records, knownDraws) {
+      const { getDrawsOn } = feed;
+      const last = knownDraws.at(-1);
+      if (!getDrawsOn || !last) return;
+      const submittedIssues = new Set(knownDraws.map((row) => row.id));
+      for (const row of records) {
+        if (row.status !== "pending" || !Number.isFinite(row.scheduledAt) || submittedIssues.has(row.issue)
+          || BigInt(row.issue) >= BigInt(last.id)) continue;
+        const day = feed.issueDate?.(row.issue) ?? drawClock(row.scheduledAt).slice(0, 10);
+        const prior = recoveryAttempts.get(day);
+        if (prior?.request || (prior && Date.now() - prior.at < durationToRetryHistory)) continue;
+        const request = new AbortController();
+        const attempt = { at: Date.now(), request };
+        const version = stopVersion;
+        recoveryAttempts.set(day, attempt);
+        getDrawsOn(day, request.signal).then((draws) => {
+          if (!request.signal.aborted && context.dataMode === "live") {
+            enqueueLedger(async () => {
+              if (request.signal.aborted || version !== stopVersion || context.dataMode !== "live") return;
+              const settled = await ledger.settle(draws);
+              if (settled.length && lastSnapshot && snapshotIsCurrent(lastSnapshot, version)) {
+                await processSnapshot(lastSnapshot, version);
+              }
+            });
+          }
+        }).catch(() => {}).finally(() => { attempt.request = null; });
+      }
+    }
+
+    function snapshotIsCurrent(snapshot, version) {
+      return version === stopVersion && context.dataMode === "live" && feedStatus?.enabled && !document.hidden
+        && snapshot === lastSnapshot && Date.now() - snapshot.receivedAt <= 20000;
+    }
+
+    function upcomingTarget(snapshot, version) {
+      if (!snapshot || !snapshotIsCurrent(snapshot, version)) return null;
+      const { targetIssue, scheduledAt, serverTime } = snapshot;
+      const latest = context.draws.at(-1);
+      if (!targetIssue || !Number.isFinite(scheduledAt) || !Number.isFinite(serverTime) || serverTime >= scheduledAt
+        || Date.now() >= scheduledAt || !latest) {
+        return null;
+      }
+      const isNext = feed.isNextIssue ? feed.isNextIssue(latest, snapshot) : BigInt(latest.id) + 1n === BigInt(targetIssue);
+      return isNext ? targetIssue : null;
+    }
+
+    async function processSnapshot(snapshot, version) {
+      if (version !== stopVersion || context.dataMode !== "live") return;
+      await ledger.settle(snapshot.draws);
+      const fresh = await ledger.read();
+      if (version !== stopVersion || context.dataMode !== "live") return;
+      recoverPending(fresh.rows, snapshot.draws);
+      if (!fresh.enabled || !snapshotIsCurrent(snapshot, version)) return;
+      const targetIssue = upcomingTarget(snapshot, version);
+      if (!targetIssue) {
+        liveMessage = "等待接口确认下一期";
+        return;
+      }
+      if (fresh.clearedThrough && BigInt(targetIssue) <= BigInt(fresh.clearedThrough)) {
+        liveMessage = `已清空至第 ${fresh.clearedThrough} 期 · 等待新一期`;
+        return;
+      }
+      const existing = fresh.rows.find((row) => row.issue === targetIssue);
+      if (existing) {
+        liveMessage = describeRecorded(existing);
+        return;
+      }
+      const pending = fresh.rows.find((row) => row.status === "pending" && BigInt(row.issue) < BigInt(targetIssue));
+      if (pending) {
+        liveMessage = `等待第 ${pending.issue} 期结算后确定投入档位`;
+        return;
+      }
+      const previous = fresh.rows.at(-1);
+      const target = { id: targetIssue, drawTime: drawClock(snapshot.scheduledAt) };
+      const state = engine.nextComboState(previous, context.settings);
+      const plan = engine.createComboPlan(context.draws, context.settings, target, state);
+      if (!plan) {
+        liveMessage = "历史数据不足 · 等待更多开奖";
+        return;
+      }
+      const result = await ledger.record(plan, { scheduledAt: snapshot.scheduledAt, previousIssue: previous?.issue ?? null });
+      liveMessage = result ? describeRecorded(result) : "等待接口确认下一期";
+    }
+
+    function render() {
+      if (!context || !isActive()) return;
+      const limit = getRecordLimit();
+      if (limit !== lastRecordLimit) {
+        lastRecordLimit = limit;
+        shown = pageSize;
+      }
+      for (const button of modeGroup.querySelectorAll("[data-combo-mode]")) {
+        const active = button.dataset.comboMode === view;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-pressed", String(active));
+      }
+      toggle.hidden = view !== "live";
+      clear.hidden = view !== "live";
+      if (view === "replay") {
+        extendReplay();
+        renderReplay();
+      } else {
+        renderLive();
+      }
+    }
+
+    function selectView(nextView) {
+      if (nextView === view) return;
+      view = nextView;
+      shown = pageSize;
+      render();
+    }
+
+    function showMore() {
+      shown += pageSize;
+      render();
+    }
+
+    function toggleTracking() {
+      const enabled = !ledgerState.enabled;
+      if (!enabled) stopVersion += 1;
+      const version = stopVersion;
+      changingFollow = true;
+      liveMessage = "";
+      clearNotice = null;
+      renderLive();
+      return enqueueLedger(async () => {
+        await ledger.setEnabled(enabled);
+        if (enabled && lastSnapshot && snapshotIsCurrent(lastSnapshot, version)) {
+          await processSnapshot(lastSnapshot, version);
+        }
+      }).finally(() => {
+        changingFollow = false;
+        if (view === "live") renderLive();
+      });
+    }
+
+    function clearLedger() {
+      if (clearingLedger) return;
+      const throughIssue = upcomingTarget(lastSnapshot, stopVersion);
+      stopVersion += 1;
+      clearingLedger = true;
+      abortRecovery();
+      renderLive();
+      return enqueueLedger(async () => {
+        try {
+          const clearedThrough = await ledger.clear(throughIssue);
+          ledgerState = { ...ledgerState, rows: [], clearedThrough };
+          shown = pageSize;
+          liveMessage = "";
+          clearNotice = {
+            message: ledgerState.enabled ? "实时账本已清空 · 将从新一期继续跟踪" : "实时账本已清空",
+            state: "ready",
+          };
+        } catch (error) {
+          clearNotice = { message: "清空失败 · 请稍后重试", state: "stale" };
+          throw error;
+        }
+      }).finally(() => {
+        clearingLedger = false;
+        renderLive();
+      });
+    }
+
+    enqueueLedger(async () => {});
+
+    return {
+      render,
+      selectView,
+      showMore,
+      toggleTracking,
+      clearLedger,
+      update(next) {
+        const prior = context;
+        context = { draws: next.draws, dataMode: next.dataMode, settings: next.settings };
+        if (!prior || next.draws !== prior.draws || next.dataMode !== prior.dataMode) {
+          if (next.dataMode === "live") {
+            cachedHistory = prior?.dataMode === "live" ? mergeDraws(cachedHistory, next.draws).slice(-1200) : next.draws;
+          } else {
+            cachedHistory = next.draws;
+            lastSnapshot = null;
+            historyFlight?.abort();
+            historyFlight = null;
+            historyAttempt = null;
+          }
+        }
+        render();
+      },
+      onSnapshot(snapshot) {
+        if (context?.dataMode !== "live") return;
+        lastSnapshot = { ...snapshot, receivedAt: Date.now() };
+        const received = lastSnapshot;
+        const version = stopVersion;
+        enqueueLedger(() => processSnapshot(received, version));
+      },
+      setFeedStatus(next) {
+        feedStatus = next;
+        if (!next.enabled) {
+          lastSnapshot = null;
+          liveMessage = "";
+          abortRecovery();
+        }
+        if (context && view === "live") renderLive();
+      },
+      pauseForSource() {
+        stopVersion += 1;
+        lastSnapshot = null;
+        liveMessage = "";
+        abortRecovery();
+        enqueueLedger(() => ledger.setEnabled(false));
+      },
+    };
+  }
+
+  globalThis.TrackComboUI = { create };
+})();
+</script>
+  <script>(function () {
+  "use strict";
+
+  const games = globalThis.TrackGames;
+  const legacyEngine = globalThis.TrackLab;
+  const byId = (id) => document.getElementById(id);
+  const formatNumber = new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 });
+  const formatSigned = new Intl.NumberFormat("zh-CN", {
+    maximumFractionDigits: 2,
+    signDisplay: "exceptZero",
+  });
+  const formatRoi = new Intl.NumberFormat("zh-CN", {
+    style: "percent",
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+    signDisplay: "exceptZero",
+  });
+  const settingsForm = byId("settings-form");
+  const windowTabs = byId("window-tabs");
+  const windowButtons = Array.from(windowTabs.querySelectorAll("[data-window]"));
+  const detailPanel = byId("detail-panel");
+  const detailTitle = byId("detail-title");
+  const detailHistory = byId("detail-history");
+  const importDialog = byId("import-dialog");
+  const importForm = byId("import-form");
+  const importFile = byId("import-file");
+  const importText = byId("import-text");
+  const importError = byId("import-error");
+  const liveToggle = byId("live-toggle");
+  const liveStatus = byId("live-status");
+  const comboStakeInput = byId("combo-stake");
+  const comboProgressionInput = byId("combo-progression");
+  const comboResetInput = byId("combo-reset");
+  const comboMaxCostInput = byId("combo-max-cost");
+  const comboCapActionInput = byId("combo-cap-action");
+  const settingsKey = "track-lab-settings";
+  const gamesKey = "track-lab-games";
+  const defaultSettings = {
+    lookback: 7, stake: 50, comboStake: 10, odds: 9.93, threshold: 10, thresholdMax: null, maxCandidatesPerPosition: 3, window: 50,
+    comboProgression: "fixed", comboReset: "hit", comboMaxCost: null, comboCapAction: "reset",
+  };
+  const editableSettings = {
+    lookback: "lookback",
+    stake: "stake",
+    odds: "odds",
+    threshold: "threshold",
+    thresholdMax: "threshold-max",
+    maxCandidatesPerPosition: "max-candidates-per-position",
+  };
+  const editableFields = Object.keys(editableSettings);
+  const comboFields = ["comboStake", "comboProgression", "comboReset", "comboMaxCost", "comboCapAction"];
+
+  let sharedSettings = loadSettings();
+  const workspace = loadWorkspace();
+  const sessions = new Map();
+  let selectedId = workspace.selected;
+  let activeTracking = null;
+  let focusReturn = null;
+  let importAttempt = 0;
+
+  const combos = globalThis.TrackComboUI.create();
+
+  function current() {
+    return sessions.get(selectedId);
+  }
+
+  function updateCombo({ combo, draws, dataMode, settings }) {
+    combo.update({ draws, dataMode, settings });
+  }
+
+  function readStorage(key) {
+    try {
+      return JSON.parse(localStorage.getItem(key));
+    } catch {
+      return null;
+    }
+  }
+
+  function writeStorage(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch {
+      // The applied settings and data still work in this page session.
+    }
+  }
+
+  function loadWorkspace() {
+    const saved = readStorage(gamesKey);
+    const added = Array.isArray(saved?.added) ? saved.added.filter((id) => games.get(id)?.available) : [];
+    const ids = [...new Set([games.defaultGame.id, ...added])];
+    const odds = Object.fromEntries(ids.flatMap((id) => {
+      const value = saved?.odds?.[id];
+      return Number.isFinite(value) && value >= 0.01 && value <= 10000 ? [[id, value]] : [];
+    }));
+    return { added: ids, selected: ids.includes(saved?.selected) ? saved.selected : games.defaultGame.id, odds };
+  }
+
+  function settingsFor(game) {
+    const odds = game.id === games.defaultGame.id ? sharedSettings.odds : workspace.odds[game.id] ?? defaultSettings.odds;
+    return { ...sharedSettings, odds };
+  }
+
+  function loadCachedDraws(game, engine) {
+    const saved = readStorage(`${gamesKey}-draws-${game.id}`);
+    if (!Array.isArray(saved) || !saved.length || saved.length > 620) return [];
+    try {
+      const draws = engine.parseCsv(engine.toCsv(saved));
+      return draws.map((draw, index) => {
+        const entry = saved[index];
+        if (entry.id !== draw.id || typeof entry.drawTime !== "string"
+          || !/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(entry.drawTime)) {
+          throw new Error("Invalid cached draw");
+        }
+        return { ...draw, drawTime: entry.drawTime };
+      });
+    } catch {
+      return [];
+    }
+  }
+
+  function createSession(game) {
+    const engine = game.id === games.defaultGame.id ? legacyEngine : legacyEngine.forFormat(game.format);
+    const feed = globalThis.TrackLiveController.forGame(game);
+    const ledger = globalThis.TrackComboLedger.forGame(game.id, engine);
+    const combo = combos.forGame({ id: game.id, engine, feed, ledger });
+    const cached = loadCachedDraws(game, engine);
+    const sample = cached.length === 0 && game.id === games.defaultGame.id;
+    const draws = sample ? engine.sampleData() : cached;
+    const settings = settingsFor(game);
+    const session = {
+      game, engine, combo, draws, settings, analysis: engine.analyze(draws, settings),
+      dataMode: sample ? "sample" : cached.length ? "cache" : "loading",
+      feedStatus: { state: "connecting", message: "正在加载开奖数据…", enabled: true },
+    };
+    session.live = feed.create({
+      onData(nextDraws) {
+        const latestIssue = session.draws.at(-1)?.id;
+        if (session.dataMode === "cache" && BigInt(nextDraws.at(-1).id) < BigInt(latestIssue)) return;
+        writeStorage(`${gamesKey}-draws-${game.id}`, nextDraws);
+        replaceDataset(session, nextDraws, "live");
+      },
+      onLatest(snapshot) {
+        combo.onSnapshot(snapshot);
+      },
+      onStatus(status) {
+        session.feedStatus = status;
+        combo.setFeedStatus(status);
+        if (current() === session) renderLiveStatus(session);
+      },
+    });
+    sessions.set(game.id, session);
+    updateCombo(session);
+    return session;
+  }
+
+  function displaySettings(values) {
+    for (const [field, id] of Object.entries(editableSettings)) byId(id).value = values[field] ?? "";
+    comboStakeInput.value = values.comboStake;
+    comboProgressionInput.value = values.comboProgression;
+    comboResetInput.value = values.comboReset;
+    comboMaxCostInput.value = values.comboMaxCost ?? "";
+    comboCapActionInput.value = values.comboCapAction;
+    syncCapActionControl();
+  }
+
+  function syncCapActionControl() {
+    const cap = comboMaxCostInput.valueAsNumber;
+    comboCapActionInput.disabled = comboProgressionInput.value === "fixed" || !Number.isFinite(cap) || cap <= 0;
+  }
+
+  function loadSettings() {
+    try {
+      const saved = readStorage(settingsKey);
+      if (saved && [50, 100, 200, 500].includes(saved.window)) {
+        const migratedCap = Number.isInteger(saved.maxComboPositions) && saved.maxComboPositions >= 1 && saved.maxComboPositions <= 10
+          ? saved.maxComboPositions : defaultSettings.maxCandidatesPerPosition;
+        const restored = Object.fromEntries([...editableFields, "window", ...comboFields].map((field) => [
+          field, Object.hasOwn(saved, field) ? saved[field] : field === "maxCandidatesPerPosition" ? migratedCap : defaultSettings[field],
+        ]));
+        if (Number.isFinite(restored.comboStake) && (restored.comboMaxCost === null || Number.isFinite(restored.comboMaxCost))
+          && editableFields.every(
+          (field) => Number.isFinite(restored[field]) || (field === "thresholdMax" && restored[field] === null),
+        )) {
+          displaySettings(restored);
+          const comboInputs = [comboStakeInput, comboProgressionInput, comboResetInput, comboMaxCostInput, comboCapActionInput];
+          if (comboInputs.every((input) => input.validity.valid) && Object.values(editableSettings).every((id) => byId(id).validity.valid)) {
+            legacyEngine.analyze([], restored);
+            if (!Object.hasOwn(saved, "maxCandidatesPerPosition") || comboFields.some((field) => !Object.hasOwn(saved, field))) {
+              writeStorage(settingsKey, restored);
+            }
+            return restored;
+          }
+        }
+      }
+    } catch {
+      // The page also runs in browsers that block local storage.
+    }
+    displaySettings(defaultSettings);
+    return { ...defaultSettings };
+  }
+
+  function node(tag, className, content) {
+    const element = document.createElement(tag);
+    if (className) element.className = className;
+    if (content !== undefined) element.textContent = content;
+    return element;
+  }
+
+  function signClass(value) {
+    if (value > 0) return "positive";
+    if (value < 0) return "negative";
+    return "";
+  }
+
+  function percent(value) {
+    return value === null ? "—" : formatRoi.format(value / 100);
+  }
+
+  function trackNumber(d) {
+    return node("span", "track-number", d);
+  }
+
+  function renderLiveStatus(session) {
+    const { state, message, enabled } = session.feedStatus;
+    liveToggle.textContent = enabled ? "暂停实时" : "连接实时";
+    liveStatus.dataset.state = state;
+    if (liveStatus.textContent !== message) liveStatus.textContent = message;
+  }
+
+  function renderDataset() {
+    const { game, draws, dataMode } = current();
+    const latest = draws.at(-1);
+    byId("data-count").textContent = formatNumber.format(draws.length);
+    byId("latest-id").textContent = latest?.id ?? "—";
+    const source = {
+      sample: { label: "演示数据", note: "演示数据为模拟开奖。可导入自己的历史开奖数据。" },
+      csv: { label: "本地 CSV", note: "已导入历史开奖，数据保存在当前页面会话中。" },
+      live: { label: game.sourceLabel, note: "实时回测使用最近一段期号连续的开奖记录。" },
+      cache: { label: "上次保存的开奖", note: "正在连接该盘的实时开奖。" },
+      loading: { label: game.sourceLabel, note: "" },
+    }[dataMode];
+    byId("data-source").textContent = source.label;
+    byId("sample-tag").hidden = dataMode !== "sample";
+    byId("dataset-note").textContent = source.note;
+    const drawTime = byId("draw-time");
+    drawTime.hidden = !latest?.drawTime || !["live", "cache"].includes(dataMode);
+    drawTime.textContent = drawTime.hidden ? "" : latest.drawTime;
+    const results = byId("latest-results");
+    results.dataset.positions = game.format.positions;
+    const values = latest?.numbers ?? Array(game.format.positions).fill("—");
+    const resultCells = values.map((number, index) => {
+      const cell = node("div", "result-cell");
+      cell.append(node("span", "", `第 ${index + 1} 位`), node("strong", "", number));
+      return cell;
+    });
+    results.replaceChildren(...resultCells);
+  }
+
+  function renderWindows() {
+    const { settings } = current();
+    for (const button of windowButtons) {
+      const isActive = Number(button.dataset.window) === settings.window;
+      button.classList.toggle("active", isActive);
+      button.classList.toggle("is-active", isActive);
+      if (button.getAttribute("role") === "tab") {
+        button.setAttribute("aria-selected", String(isActive));
+        button.tabIndex = isActive ? 0 : -1;
+      } else {
+        button.setAttribute("aria-pressed", String(isActive));
+      }
+    }
+  }
+
+  function formatRoiRange(settings) {
+    const lower = formatNumber.format(settings.threshold);
+    return settings.thresholdMax === null ? `≥ ${lower}%`
+      : `${lower}% 至 ${formatNumber.format(settings.thresholdMax)}%（含端点）`;
+  }
+
+  function renderRoi(rows, roiQualified) {
+    const { settings } = current();
+    const tableRows = rows.map((row) => {
+      const tr = node("tr", roiQualified.has(row.d) ? "qualified" : "");
+      const trackingButton = node("button", "row-button");
+      trackingButton.type = "button";
+      trackingButton.dataset.track = row.d;
+      trackingButton.setAttribute("aria-label", `查看 ${row.d} 号的映射记录`);
+      trackingButton.setAttribute("aria-controls", "detail-panel");
+      trackingButton.setAttribute("aria-expanded", String(activeTracking === row.d));
+      trackingButton.append(trackNumber(row.d));
+      const numberCell = node("td");
+      numberCell.append(trackingButton);
+      const roiCell = node("td", "ratio", percent(row.roi));
+      const roiSign = signClass(row.roi);
+      if (roiSign) roiCell.classList.add(roiSign);
+      tr.append(
+        numberCell,
+        node("td", "", formatNumber.format(row.rounds)),
+        node("td", "", formatNumber.format(row.bets)),
+        node("td", "", formatNumber.format(row.hits)),
+        node("td", "", formatNumber.format(row.cost)),
+        node("td", "", formatNumber.format(row.returns)),
+        node("td", signClass(row.profit), formatSigned.format(row.profit)),
+        roiCell,
+      );
+      return tr;
+    });
+    byId("roi-rows").replaceChildren(...tableRows);
+    const rounds = Math.max(0, ...rows.map((row) => row.rounds));
+    const range = formatRoiRange(settings);
+    byId("roi-caption").textContent = rounds
+      ? `最近 ${settings.window} 期中实际评估 ${rounds} 期 · ROI ${range}`
+      : `至少需要 ${settings.lookback + 1} 期数据才能开始回测 · ROI ${range}`;
+    byId("qualified-count").textContent = String(roiQualified.size);
+    const best = rows.reduce((highest, row) => (
+      row.roi !== null && (highest === null || row.roi > highest) ? row.roi : highest
+    ), null);
+    const bestRoi = byId("best-roi");
+    bestRoi.textContent = percent(best);
+    bestRoi.classList.toggle("positive", best > 0);
+    bestRoi.classList.toggle("negative", best < 0);
+  }
+
+  function renderMappings(selection) {
+    const { analysis, draws, settings } = current();
+    const excludedTrackers = new Set(analysis.excludedPositions.map(({ d }) => d));
+    const mappingRows = analysis.mappings.map((mapping) => {
+      const row = node("button", "mapping-row");
+      row.type = "button";
+      row.dataset.track = mapping.d;
+      row.classList.toggle("qualified", selection.has(mapping.d));
+      row.setAttribute("aria-expanded", String(activeTracking === mapping.d));
+      row.setAttribute("aria-controls", "detail-panel");
+      const candidateList = node("span", "candidate-list");
+      if (mapping.candidates.length) {
+        candidateList.append(...mapping.candidates.map((candidate) => node("span", "candidate", candidate)));
+      } else {
+        candidateList.append(node("span", "empty-candidates", "—"));
+      }
+      const position = mapping.positions.length ? `第 ${mapping.positions.join("、")} 位`
+        : draws.length ? "未出现" : "—";
+      const excluded = excludedTrackers.has(mapping.d) ? " · 候选号超限，位置已排除" : "";
+      row.setAttribute("aria-label", `${mapping.d} 号 · ${position} · 候选 ${mapping.candidates.join("、") || "暂无"}${excluded} · 查看映射记录`);
+      if (excluded) row.title = `候选号 ${mapping.candidates.length} 个，超过上限 ${settings.maxCandidatesPerPosition} 个`;
+      row.append(trackNumber(mapping.d), candidateList, node("span", "position-tag", position));
+      return row;
+    });
+    byId("map-rows").replaceChildren(...mappingRows);
+    byId("map-caption").textContent = `近 ${settings.lookback} 期同位置去重。ROI 达标且该位置有 1 至 ${settings.maxCandidatesPerPosition} 个候选号时高亮。`;
+  }
+
+  function renderDetail() {
+    const { analysis } = current();
+    const mapping = analysis.mappings.find((item) => item.d === activeTracking);
+    detailPanel.hidden = !mapping;
+    if (!mapping) return;
+    detailTitle.textContent = `${mapping.d} 号的同车位映射`;
+    if (!mapping.history.length) {
+      detailHistory.replaceChildren(node("p", "empty-history", "至少需要两期数据才能查看历史映射。"));
+      return;
+    }
+    const records = mapping.history.map((record) => {
+      const row = node("div", "history-row");
+      row.append(
+        node("span", "history-issue", `${record.id} → ${record.nextId}`),
+        node("span", "history-position", `第 ${record.position} 位`),
+        node("strong", "history-result", record.result),
+      );
+      return row;
+    });
+    detailHistory.replaceChildren(...records);
+  }
+
+  function renderAnalysis() {
+    const { analysis, settings } = current();
+    renderWindows();
+    renderRoi(analysis.windows[settings.window], new Set(analysis.roiQualified));
+    renderMappings(new Set(analysis.selection));
+    renderDetail();
+  }
+
+  function applySettings(nextSettings) {
+    const selected = current();
+    selected.engine.analyze(selected.draws, nextSettings);
+    if (selectedId !== games.defaultGame.id) workspace.odds[selectedId] = nextSettings.odds;
+    sharedSettings = selectedId === games.defaultGame.id ? nextSettings : { ...nextSettings, odds: sharedSettings.odds };
+    writeStorage(settingsKey, sharedSettings);
+    writeStorage(gamesKey, workspace);
+    for (const session of sessions.values()) {
+      session.settings = settingsFor(session.game);
+      session.analysis = session.engine.analyze(session.draws, session.settings);
+      updateCombo(session);
+    }
+    renderAnalysis();
+  }
+
+  function replaceDataset(session, nextDraws, nextMode) {
+    session.analysis = session.engine.analyze(nextDraws, session.settings);
+    session.draws = nextDraws;
+    session.dataMode = nextMode;
+    updateCombo(session);
+    if (session !== current()) return;
+    const focusedTracking = document.activeElement?.dataset.track;
+    const focusedContainer = document.activeElement?.closest("#roi-rows, #map-rows");
+    renderDataset();
+    renderAnalysis();
+    if (focusedContainer && focusedTracking) {
+      focusedContainer.querySelector(`[data-track="${focusedTracking}"]`)?.focus({ preventScroll: true });
+    }
+  }
+
+  function setError(element, message = "") {
+    element.textContent = message;
+    element.hidden = !message;
+  }
+
+  settingsForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const nextSettings = Object.fromEntries(Object.entries(editableSettings).map(([field, id]) => {
+      const input = byId(id);
+      return [field, field === "thresholdMax" && input.value === "" ? null : input.valueAsNumber];
+    }));
+    try {
+      applySettings({ ...current().settings, ...nextSettings });
+      setError(byId("settings-error"));
+    } catch (error) {
+      setError(byId("settings-error"), error.message);
+    }
+  });
+
+  comboProgressionInput.addEventListener("change", syncCapActionControl);
+  comboMaxCostInput.addEventListener("input", syncCapActionControl);
+  byId("combo-stake-form").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const error = byId("combo-stake-error");
+    try {
+      applySettings({
+        ...current().settings,
+        comboStake: comboStakeInput.valueAsNumber,
+        comboProgression: comboProgressionInput.value,
+        comboReset: comboResetInput.value,
+        comboMaxCost: comboMaxCostInput.value === "" ? null : comboMaxCostInput.valueAsNumber,
+        comboCapAction: comboCapActionInput.value,
+      });
+      setError(error);
+    } catch (failure) {
+      setError(error, failure.message);
+    }
+  });
+
+  windowTabs.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-window]");
+    if (button) applySettings({ ...current().settings, window: Number(button.dataset.window) });
+  });
+
+  windowTabs.addEventListener("keydown", (event) => {
+    const current = windowButtons.indexOf(event.target);
+    if (current < 0 || event.target.getAttribute("role") !== "tab") return;
+    const n = windowButtons.length;
+    const next = {
+      ArrowLeft: (current - 1 + n) % n,
+      ArrowRight: (current + 1) % n,
+      Home: 0,
+      End: n - 1,
+    }[event.key];
+    if (next === undefined) return;
+    event.preventDefault();
+    windowButtons[next].click();
+    windowButtons[next].focus();
+  });
+
+  function closeHistory() {
+    activeTracking = null;
+    renderDetail();
+    for (const button of document.querySelectorAll("[data-track][aria-expanded='true']")) {
+      button.setAttribute("aria-expanded", "false");
+    }
+    if (focusReturn) {
+      byId(focusReturn.container)?.querySelector(`[data-track="${focusReturn.tracking}"]`)?.focus();
+      focusReturn = null;
+    }
+  }
+
+  for (const container of [byId("roi-rows"), byId("map-rows")]) {
+    container.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-track]");
+      if (!button) return;
+      const tracking = Number(button.dataset.track);
+      if (activeTracking === tracking) {
+        closeHistory();
+        return;
+      }
+      activeTracking = tracking;
+      focusReturn = { container: container.id, tracking };
+      for (const rowButton of document.querySelectorAll("[data-track]")) {
+        rowButton.setAttribute("aria-expanded", String(Number(rowButton.dataset.track) === tracking));
+      }
+      renderDetail();
+      detailTitle.tabIndex = -1;
+      detailTitle.focus();
+    });
+  }
+
+  byId("detail-close").addEventListener("click", closeHistory);
+  detailPanel.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeHistory();
+  });
+
+  const gameList = byId("game-list");
+  const gameDialog = byId("game-dialog");
+  const gamePresets = byId("game-presets");
+
+  function renderGames() {
+    gameList.replaceChildren(...workspace.added.map((id) => {
+      const button = node("button", "", games.get(id).label);
+      button.type = "button";
+      button.dataset.game = id;
+      button.setAttribute("aria-pressed", String(selectedId === id));
+      return button;
+    }));
+  }
+
+  function selectGame(id, moveFocus = false) {
+    const session = sessions.get(id);
+    if (!session) return;
+    selectedId = id;
+    workspace.selected = id;
+    activeTracking = null;
+    focusReturn = null;
+    writeStorage(gamesKey, workspace);
+    displaySettings(session.settings);
+    byId("page-title").textContent = session.game.label;
+    setError(byId("settings-error"));
+    renderGames();
+    renderDataset();
+    renderAnalysis();
+    renderLiveStatus(session);
+    combos.selectGame(id);
+    if (moveFocus) gameList.querySelector('[aria-pressed="true"]')?.focus({ preventScroll: true });
+  }
+
+  gameList.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-game]");
+    if (button?.dataset.game !== selectedId) selectGame(button?.dataset.game, true);
+  });
+
+  byId("game-add").addEventListener("click", () => {
+    gamePresets.replaceChildren(...games.presets.filter((game) => game.id !== games.defaultGame.id).map((game) => {
+      const added = sessions.has(game.id);
+      const button = node("button", "game-preset");
+      button.type = "button";
+      button.dataset.preset = game.id;
+      button.disabled = added || !game.available;
+      const description = added ? "已添加" : game.available ? `${game.format.positions} 位开奖` : "数据源待核验";
+      button.append(node("strong", "", game.label), node("span", "", description));
+      return button;
+    }));
+    gameDialog.showModal();
+  });
+  byId("game-add-cancel").addEventListener("click", () => gameDialog.close());
+  gamePresets.addEventListener("click", (event) => {
+    const id = event.target.closest("[data-preset]")?.dataset.preset;
+    const game = games.get(id);
+    if (!game?.available || sessions.has(id)) return;
+    const session = createSession(game);
+    workspace.added.push(id);
+    gameDialog.close();
+    selectGame(id, true);
+    session.live.start();
+  });
+
+  byId("import-open").addEventListener("click", () => {
+    const { game } = current();
+    const { positions, min, unique } = game.format;
+    byId("import-description").textContent = `${game.label} · 每行填期号和 ${positions} 个位置的号码。`;
+    const columns = Array.from({ length: positions }, (_, index) => `n${index + 1}`);
+    const example = unique ? Array.from({ length: positions }, (_, index) => min + index) : [2, 1, 8, 2, 9];
+    importText.placeholder = `period,${columns.join(",")}\n${game.format.sampleIssue?.(0) ?? 1001},${example.join(",")}`;
+    importForm.reset();
+    setError(importError);
+    importDialog.showModal();
+  });
+  byId("import-cancel").addEventListener("click", (event) => {
+    event.preventDefault();
+    importAttempt += 1;
+    importDialog.close();
+  });
+  importDialog.addEventListener("cancel", () => { importAttempt += 1; });
+  importFile.addEventListener("change", () => setError(importError));
+  importText.addEventListener("input", () => setError(importError));
+
+  importForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const attempt = ++importAttempt;
+    const session = current();
+    const file = importFile.files[0];
+    setError(importError);
+    try {
+      const csv = importText.value.trim() || (file ? await file.text() : "");
+      if (attempt !== importAttempt || !importDialog.open || session !== current()) return;
+      if (!csv.trim()) throw new Error("请先选择 CSV 文件或粘贴开奖数据。");
+      const imported = session.engine.parseCsv(csv);
+      session.combo.pauseForSource();
+      session.live.pause("正在查看导入数据 · 实时更新已暂停");
+      replaceDataset(session, imported, "csv");
+      importDialog.close();
+    } catch (error) {
+      if (attempt === importAttempt && importDialog.open) setError(importError, error.message);
+    }
+  });
+
+  byId("sample-download").addEventListener("click", (event) => {
+    event.preventDefault();
+    const { game, engine } = current();
+    const csv = new Blob(["\uFEFF", engine.toCsv(engine.sampleData())], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(csv);
+    const link = node("a");
+    link.href = url;
+    link.download = `track-lab-${game.id}-sample.csv`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+
+  byId("sample-reset").addEventListener("click", (event) => {
+    event.preventDefault();
+    const session = current();
+    session.combo.pauseForSource();
+    session.live.pause("正在查看演示数据 · 实时更新已暂停");
+    replaceDataset(session, session.engine.sampleData(), "sample");
+    if (importDialog.open) {
+      importAttempt += 1;
+      importDialog.close();
+    }
+  });
+
+  liveToggle.addEventListener("click", () => {
+    const { live } = current();
+    if (live.enabled) live.pause();
+    else live.start();
+  });
+
+  for (const id of workspace.added) createSession(games.get(id));
+  selectGame(selectedId);
+  for (const session of sessions.values()) session.live.start();
+}());
+</script>
+</body>
+</html>
