@@ -267,6 +267,9 @@ tbody tr:not(.qualified):hover, .mapping-row:not(.qualified):hover { background:
 .combo-detail { padding: 9px 18px 13px; border-top: 1px solid #304047; background: #142027; color: var(--muted); font-size: 12px; line-height: 1.65; overflow-x: auto; }
 .combo-detail > p, .combo-detail > ul { margin-block: 4px; }
 .combo-detail > ul { padding-inline-start: 17px; }
+.combo-detail-heading { margin: 10px 0 4px; color: var(--text); font-size: 12px; font-weight: 700; }
+.combo-detail > .combo-qualified-list { display: flex; flex-wrap: wrap; gap: 4px 8px; padding: 0; list-style: none; }
+.combo-qualified-position { min-width: 0; padding: 1px 6px; border: 1px solid #304047; border-radius: 5px; color: var(--text); overflow-wrap: anywhere; }
 .combo-pick { display: grid; grid-template-columns: 48px 69px minmax(0, 1fr) minmax(50px, auto); align-items: center; gap: 8px; max-width: 490px; padding: 5px 0; border-top: 1px solid #2b3d46; }
 .combo-pick > strong { color: var(--text); }
 .combo-empty { padding: 15px 18px; border-top: 1px solid #304047; color: var(--muted); font-size: 13px; }
@@ -844,15 +847,17 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
   function selectComboPositions(mappings, maxCandidatesPerPosition) {
     const picks = [];
     const excludedPositions = [];
+    const qualifiedPositions = [];
     for (const { d, positions, candidates } of mappings) {
       const candidateCount = candidates.length;
-      if (!candidateCount) continue;
+      const excluded = candidateCount > maxCandidatesPerPosition;
       for (const position of positions) {
-        if (candidateCount > maxCandidatesPerPosition) excludedPositions.push({ d, position, candidateCount });
-        else picks.push({ d, position, candidates });
+        qualifiedPositions.push({ d, position, candidates, candidateCount, excluded });
+        if (excluded) excludedPositions.push({ d, position, candidateCount });
+        else if (candidateCount) picks.push({ d, position, candidates });
       }
     }
-    return { picks, excludedPositions };
+    return { picks, excludedPositions, qualifiedPositions };
   }
 
   function roiPercent(cost, returns) {
@@ -922,12 +927,12 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
     const roiQualified = stats[window]
       .filter(({ roi }) => qualifies(roi, threshold, thresholdMax))
       .map(({ d }) => d);
-    const { picks, excludedPositions } = selectComboPositions(
+    const qualified = selectComboPositions(
       roiQualified.map((d) => mappings[d - format.min]), maxCandidatesPerPosition,
     );
-    const selection = [...new Set(picks.map(({ d }) => d))];
+    const selection = [...new Set(qualified.picks.map(({ d }) => d))];
 
-    return { windows: stats, mappings, roiQualified, selection, picks, excludedPositions };
+    return { windows: stats, mappings, roiQualified, selection, ...qualified };
   }
 
   function stakeMultiplier(progression, step) {
@@ -945,7 +950,7 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
     return current;
   }
 
-  function makeComboPlan(issue, settings, evaluated, { picks, excludedPositions }, requestedState) {
+  function makeComboPlan(issue, settings, evaluated, { picks, excludedPositions, qualifiedPositions }, requestedState) {
     const {
       lookback, odds, threshold, thresholdMax = null, maxCandidatesPerPosition = 10, window,
       comboProgression = "fixed", comboReset = "hit", comboMaxCost = null, comboCapAction = "reset",
@@ -991,6 +996,7 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
       evaluated,
       qualifiedCount,
       excludedPositions,
+      qualifiedPositions,
       step,
       capped,
       stakeCents: centsValue(stake),
@@ -1039,7 +1045,7 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
     const { step = 0 } = row;
     const capped = row.capped === true;
     if (row.status === "skipped" || row.status === "pending") return { step, capped };
-    const hit = row.hits > 0;
+    const hit = row.hits > 0 || row.status === "hit";
     if (comboReset === "hit" && hit) return { step: 0, capped: false };
     if (comboReset === "profit") {
       const outcome = compareComboCents(row.profit, 0);
@@ -1417,6 +1423,25 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
   const desiredHistory = 600;
   const maxHistory = 620;
 
+  class FeedError extends Error {
+    constructor(reason, status) {
+      super(reason);
+      this.status = status;
+    }
+  }
+
+  function latestFailure(game, error) {
+    const source = game.provider.proxyPath ? "开奖服务" : "API68";
+    if (error.status === 503) return `${source} 暂时不可用（503） · 自动重试`;
+    if (error.status) return `${source} 返回 HTTP ${error.status} · 自动重试`;
+    const reasons = {
+      timeout: "请求超时",
+      network: "连接失败（网络或跨域限制）",
+      payload: "返回的开奖数据无效",
+    };
+    return `${source} ${reasons[error.message] ?? "返回的开奖数据无效"} · 自动重试`;
+  }
+
   function previousDate(date) {
     const midnight = Date.parse(date + "T00:00:00Z");
     return new Date(midnight - 86400000).toISOString().slice(0, 10);
@@ -1478,12 +1503,21 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
         credentials: "omit",
         signal: request.signal,
       });
-      if (!response.ok) throw new Error("开奖接口返回 " + response.status);
-      const payload = await response.json();
+      if (!response.ok) throw new FeedError("http", response.status);
+      let payload;
+      try {
+        payload = await response.json();
+      } catch (error) {
+        if (request.signal.aborted) throw error;
+        throw new FeedError("payload");
+      }
       const workerTime = Number(response.headers.get("X-Track-Fetched-At"));
       const dateTime = Date.parse(response.headers.get("Date"));
       const fetchedAt = workerTime > 0 ? workerTime : Number.isFinite(dateTime) ? dateTime : Date.now();
       return { payload, fetchedAt };
+    } catch (error) {
+      if (error instanceof FeedError || signal?.aborted) throw error;
+      throw new FeedError(request.signal.aborted ? "timeout" : "network");
     } finally {
       clearTimeout(timeout);
       signal?.removeEventListener("abort", abort);
@@ -1552,8 +1586,8 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
           return;
         }
         records = api.mergeDraws(draws, [latest]);
-      } catch {
-        if (isCurrent(run)) status("stale", "暂未取到最新开奖 · 自动重试");
+      } catch (error) {
+        if (isCurrent(run)) status("stale", latestFailure(game, error));
         return;
       }
 
@@ -2072,6 +2106,25 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
     return `第 ${row.issue} 期${result} · ROI 评估 ${row.evaluated}/${row.settings.window} 期`;
   }
 
+  function appendQualifiedPositions(body, row, picks) {
+    const frozen = Array.isArray(row.qualifiedPositions);
+    const positions = frozen ? row.qualifiedPositions : [...picks, ...(row.excludedPositions ?? [])];
+    const missingPositions = !frozen && (row.qualifiedCount ?? 0) > picks.length;
+    if (!positions.length && !missingPositions) return;
+
+    body.append(node("h3", "combo-detail-heading", "ROI 达标位置 · 候选号上限筛选前"));
+    if (positions.length) {
+      const list = node("ul", "combo-qualified-list");
+      for (const { position, candidates, candidateCount } of [...positions].sort((a, b) => a.position - b.position)) {
+        const numbers = Array.isArray(candidates) ? candidates.join(" ") || "暂无候选号"
+          : `${candidateCount} 个，旧记录仅保存数量`;
+        list.append(node("li", "combo-qualified-position", `第 ${position} 位（${numbers}）`));
+      }
+      body.append(list);
+    }
+    if (missingPositions) body.append(node("p", "combo-qualified-note", "旧记录仅保留了部分达标位置信息。"));
+  }
+
   function buildRow(engine, row, open) {
     const labels = { pending: "待开奖", hit: "命中", miss: "未中", skipped: "跳过" };
     const details = node("details", "combo-row");
@@ -2099,6 +2152,7 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
       node("p", "combo-strategy-meta", `${strategy(settings)} · 第 ${(row.step ?? 0) + 1} 档`),
     );
     const picks = row.results ?? row.picks;
+    appendQualifiedPositions(body, row, picks);
     if (row.skipReason === "position_limit") {
       body.append(node("p", "combo-inactive", `本期有 ${row.qualifiedCount} 个车位达标，超过 ${settings.maxComboPositions} 个车位的上限（${row.qualifiedCount} > ${settings.maxComboPositions}），整期跳过。`));
     } else if (row.skipReason === "candidate_limit") {
@@ -2106,15 +2160,17 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
     } else if (row.skipReason === "stake_limit" || row.capApplied) {
       body.append(node("p", row.skipReason === "stake_limit" ? "combo-inactive" : "combo-cap-result", capDetail(row)));
     } else if (!picks.length) {
-      body.append(node("p", "combo-inactive", "本期没有达标车位。"));
+      const explanation = row.qualifiedPositions?.length ? "达标位置暂无可用候选号，本期跳过。" : "本期没有达标车位。";
+      body.append(node("p", "combo-inactive", explanation));
     }
     if (row.excludedPositions?.length) {
-      const excluded = row.excludedPositions.map(({ d, position, candidateCount }) =>
+      const excluded = [...row.excludedPositions].sort((left, right) => left.position - right.position).map(({ d, position, candidateCount }) =>
         `第 ${position} 位（追踪 ${d} 号，${candidateCount} 个候选号）`).join("、");
       body.append(node("p", "combo-excluded", `候选号超限，排除${excluded}。`));
     }
     const action = progressionAction(row);
     if (action) body.append(node("p", "combo-progression-action", action));
+    if (picks.length) body.append(node("h3", "combo-detail-heading combo-execution-heading", "实际纳入模拟的位置"));
     for (const pick of picks) {
       const line = node("div", "combo-pick");
       const candidates = node("span", "candidate-list");
