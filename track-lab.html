@@ -1540,9 +1540,10 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
     return records.slice(-required);
   }
 
-  function create(game, api, latestUrl, getDrawsOn, historyDate, { onData, onStatus, onLatest = () => {} }) {
+  function create(game, api, latestUrl, getDrawsOn, historyDate, { onData, onStatus, onLatest = () => {}, initialDraws = [] }) {
     let enabled = false;
-    let draws = [];
+    let knownDraws = initialDraws.slice(-maxHistory);
+    let draws = api.latestConsecutive(knownDraws);
     let delivered = null;
     let timer = null;
     let cycle = null;
@@ -1585,7 +1586,7 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
           status("stale", "接口期号落后 · 等待追上");
           return;
         }
-        records = api.mergeDraws(draws, [latest]);
+        records = api.mergeDraws(knownDraws, [latest]);
       } catch (error) {
         if (isCurrent(run)) status("stale", latestFailure(game, error));
         return;
@@ -1593,15 +1594,15 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
 
       let goalReached = records.length >= desiredHistory;
       let hadHistoryError = false;
+      const retrieved = [latest];
       if (!goalReached) {
         let date = historyDate(latest);
-        const retrieved = [latest];
         for (let day = 0; day < (game.bootstrapDays ?? 2); day++, date = previousDate(date)) {
           try {
             const dayRows = await historyBefore(getDrawsOn, date, BigInt(latest.id), run.signal);
             if (!isCurrent(run)) return;
             // The history response can arrive after the next draw. Anchor this cycle to the latest response.
-            records = api.mergeDraws(draws, [...retrieved, ...dayRows]);
+            records = api.mergeDraws(knownDraws, [...retrieved, ...dayRows]);
             retrieved.push(...dayRows);
             goalReached = records.length >= desiredHistory;
             if (goalReached) break;
@@ -1613,11 +1614,8 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
       }
 
       if (!isCurrent(run)) return;
-      if (previous && !goalReached && !records.some((row) => row.id === previous.id)) {
-        onLatest({ targetIssue: null, scheduledAt: null, serverTime: null, draws: records });
-        status("stale", `检测到缺期 · 保留此前连续 ${draws.length} 期`);
-        return;
-      }
+      // Keep older confirmed results for joining across a gap if the provider fills it later.
+      knownDraws = api.sortDraws([...knownDraws, ...retrieved]).slice(-maxHistory);
       publish(records);
       const upcoming = upcomingDraw(game, api, payload, latest, fetchedAt);
       onLatest({ ...upcoming, draws: records });
@@ -1628,7 +1626,8 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
         status("live", "自动更新 · 每 15 秒检查");
       } else {
         const count = `当前连续 ${draws.length} 期`;
-        status("partial", hadHistoryError ? `${count} · 历史暂不可用，自动重试` : `${count} · 继续补齐历史`);
+        if (knownDraws.length > draws.length) status("partial", `最新开奖已更新 · 检测到缺期 · ${count}`);
+        else status("partial", hadHistoryError ? `${count} · 历史暂不可用，自动重试` : `${count} · 继续补齐历史`);
       }
     }
 
@@ -2798,9 +2797,8 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
       feedStatus: { state: "connecting", message: "正在加载开奖数据…", enabled: true },
     };
     session.live = feed.create({
+      initialDraws: cached,
       onData(nextDraws) {
-        const latestIssue = session.draws.at(-1)?.id;
-        if (session.dataMode === "cache" && BigInt(nextDraws.at(-1).id) < BigInt(latestIssue)) return;
         writeStorage(`${gamesKey}-draws-${game.id}`, nextDraws);
         replaceDataset(session, nextDraws, "live");
       },
