@@ -24,6 +24,88 @@
   color: var(--text);
 }
 
+.binary-panel { margin-top: 16px; overflow: hidden; }
+.binary-heading { flex-wrap: wrap; }
+.binary-tag { color: var(--accent); background: #23352a; border: 1px solid #425c40; border-radius: 6px; padding: 7px 10px; font-size: 11px; line-height: 1.6; }
+.binary-settings-form { margin: 0 18px; padding: 16px; border: 1px solid var(--line); background: #131e24; border-radius: 9px; }
+.binary-common-settings { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.binary-settings-form label { display: grid; gap: 6px; min-width: 0; color: var(--muted); font-size: 12px; }
+.binary-settings-form input, .binary-settings-form select { width: 100%; min-width: 0; min-height: 37px; color: var(--text); background: #1b2a31; padding: 7px 9px; border: 1px solid #40535d; border-radius: 6px; }
+.binary-play-settings { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 13px; }
+.binary-play-settings fieldset { margin: 0; padding: 11px 12px 13px; min-width: 0; display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 10px; border: 1px solid var(--line); border-radius: 7px; }
+.binary-play-settings legend { color: var(--text); padding: 0 6px; font-size: 13px; font-weight: 750; }
+.binary-form-footer { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 13px; }
+.binary-form-footer p { color: var(--muted); font-size: 11px; line-height: 1.7; }
+.binary-strategy-help { margin-top: 13px; color: var(--muted); font-size: 12px; line-height: 1.8; }
+.binary-strategy-help summary { cursor: pointer; color: var(--text); }
+.binary-strategy-help p { margin-top: 6px; }
+.binary-subheading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 18px 12px; flex-wrap: wrap; }
+.binary-subheading h3 { font-size: 14px; }
+.binary-subheading p { color: var(--muted); font-size: 11px; line-height: 1.6; }
+.binary-prediction-table th:not(:first-child), .binary-prediction-table td:not(:first-child) { text-align: center; }
+.binary-prediction-table tbody th { font-size: 12px; background: transparent; color: var(--text); font-weight: 650; }
+.binary-prediction-table td { height: 58px; }
+.binary-prediction-table small { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; font-weight: 400; }
+.binary-pick > strong { color: var(--accent); font-size: 17px; }
+.binary-observe > strong { color: var(--muted); font-size: 13px; font-weight: 500; }
+.binary-latest-number { font-size: 18px; font-weight: 750; }
+.binary-note { line-height: 1.8; }
+.binary-record-heading { border-top: 1px solid var(--line); margin-top: 5px; }
+.binary-actions { display: flex; align-items: center; gap: 8px; }
+.binary-context { display: flex; align-items: start; justify-content: space-between; gap: 15px; padding: 0 18px 14px; color: var(--muted); font-size: 11px; line-height: 1.8; }
+#binary-status { color: var(--accent); text-align: right; max-width: 42%; flex: 0 1 auto; }
+#binary-status[data-state="stale"] { color: var(--negative); }
+.binary-summary { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1px; padding: 0 18px 18px; }
+.binary-summary > div { padding: 12px 14px; background: #1d2d34; border-right: 1px solid var(--line); }
+.binary-summary > div:first-child { border-radius: 7px 0 0 7px; }
+.binary-summary > div:last-child { border: 0; border-radius: 0 7px 7px 0; }
+.binary-summary span { display: block; font-size: 11px; color: var(--muted); }
+.binary-summary strong { display: block; margin-top: 6px; font-size: clamp(17px, 2vw, 25px); letter-spacing: -.03em; overflow-wrap: anywhere; }
+.binary-details { border-top: 1px solid var(--line); }
+.binary-details > summary { padding: 14px 18px; color: var(--muted); cursor: pointer; font-size: 12px; font-weight: 650; }
+.binary-details[open] > summary { color: var(--accent); }
+.binary-details > summary:focus-visible, .binary-record > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; }
+#binary-stat-rows th, #binary-position-rows th, #binary-comparison-rows th, #binary-comparison-positions tbody th { color: var(--text); font-size: 12px; background: transparent; }
+.binary-rows { border-top: 1px solid var(--line); }
+.binary-record { border-bottom: 1px solid var(--line); }
+.binary-record > summary { display: flex; align-items: center; gap: 16px; padding: 13px 18px; cursor: pointer; font-size: 12px; list-style: none; }
+.binary-record > summary::before { content: "›"; font-size: 19px; color: var(--muted); }
+.binary-record[open] > summary::before { transform: rotate(90deg); }
+.binary-record > summary::-webkit-details-marker { display: none; }
+.binary-record > summary > strong { overflow-wrap: anywhere; }
+.binary-record-state { color: var(--muted); }
+.binary-record-amounts { display: flex; gap: 20px; margin-left: auto; align-items: center; white-space: nowrap; }
+.binary-record-amounts > span { color: var(--muted); }
+.binary-record[open] { background: #1b2930; }
+.binary-record-meta { padding: 0 18px 14px; color: var(--muted); font-size: 11px; line-height: 1.8; }
+.binary-empty { color: var(--muted); padding: 25px 18px; font-size: 12px; line-height: 1.8; }
+.binary-panel button:disabled { opacity: .5; cursor: default; }
+
+@media (max-width: 1000px) {
+  .binary-play-settings { grid-template-columns: 1fr; }
+  .binary-context { flex-direction: column; gap: 5px; }
+  #binary-status { max-width: none; text-align: left; }
+}
+@media (max-width: 600px) {
+  .binary-heading { padding: 16px 12px; }
+  .binary-tag { width: 100%; }
+  .binary-settings-form { margin-inline: 10px; padding: 12px; }
+  .binary-common-settings { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .binary-common-settings > label:last-child { grid-column: 1 / -1; }
+  .binary-play-settings fieldset { grid-template-columns: 1fr 1fr; }
+  .binary-play-settings fieldset > label:first-of-type { grid-column: 1 / -1; }
+  .binary-form-footer { align-items: stretch; flex-direction: column; }
+  .binary-subheading { padding-inline: 12px; }
+  .binary-record-heading { gap: 10px; }
+  .binary-context { padding-inline: 12px; }
+  .binary-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); padding-inline: 12px; gap: 5px; }
+  .binary-summary > div, .binary-summary > div:first-child, .binary-summary > div:last-child { border: 0; border-radius: 5px; }
+  .binary-summary > div:last-child { grid-column: 1 / -1; }
+  .binary-record > summary { flex-wrap: wrap; gap: 9px; padding-inline: 12px; }
+  .binary-record-amounts { flex-basis: 100%; justify-content: space-between; margin-left: 17px; }
+  .binary-record-meta { padding-inline: 12px; }
+}
+
 * { box-sizing: border-box; }
 body { margin: 0; }
 button, input, select, textarea { font: inherit; }
@@ -40,6 +122,14 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .game-nav { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 8px; margin-top: 17px; }
 .game-nav .game-list { display: flex; flex-wrap: wrap; flex: 0 1 auto; max-width: 100%; }
 .game-nav .game-list button { padding-inline: 13px; }
+.game-nav .game-tab { position: relative; display: flex; padding-top: 9px; }
+.game-nav .game-tab .game-select { padding-left: 33px; min-height: 39px; border-radius: 6px; }
+.game-nav .game-tab .game-close { position: absolute; top: 0; left: 0; z-index: 1; display: grid; place-items: center; width: 30px; height: 30px; padding: 0; border: 1px solid var(--line); border-radius: 6px; color: var(--muted); background: var(--panel); font-size: 20px; line-height: 1; }
+.game-nav .game-tab .game-close:hover { color: var(--negative); background: #3d292e; }
+.game-empty { margin: 26px 0; padding: 50px 20px; text-align: center; }
+.game-empty h1 { font-size: 24px; }
+.game-empty p { margin: 14px 0 22px; color: var(--muted); line-height: 1.7; }
+.header-actions button:disabled { opacity: .45; cursor: default; }
 .game-presets { display: grid; gap: 8px; margin-top: 16px; }
 .game-preset { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px; width: 100%; text-align: left; color: var(--text); background: var(--raised); border: 1px solid var(--line); border-radius: 7px; }
 .game-preset:hover:not(:disabled) { border-color: var(--accent); }
@@ -360,6 +450,12 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
       <div class="window-tabs game-list" id="game-list" role="group" aria-label="选择盘口"></div>
       <button class="button secondary" id="game-add" type="button" aria-haspopup="dialog"><span aria-hidden="true">＋</span>添加盘口</button>
     </nav>
+    <section class="panel game-empty" id="game-empty" hidden aria-labelledby="game-empty-title">
+      <h1 id="game-empty-title">暂无打开的盘口</h1>
+      <p>添加盘口即可自动连接开奖，历史设置与模拟账本会保留。</p>
+      <button class="button primary" id="game-empty-add" type="button">添加盘口</button>
+    </section>
+    <div id="game-workspace">
     <section class="overview" aria-labelledby="page-title">
       <div class="intro">
         <h1 id="page-title">极速赛车</h1>
@@ -382,6 +478,55 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
         <div class="draw-time" id="draw-time" hidden></div>
       </div>
       <div class="results-grid" id="latest-results" aria-label="最新一期各位置开奖号码"></div>
+    </section>
+
+    <section class="panel binary-panel" id="binary-panel" aria-labelledby="binary-title">
+      <header class="panel-heading binary-heading">
+        <div><h2 id="binary-title">大小／单双预测</h2><p id="binary-game-description">各位置分别分析，两种玩法独立模拟</p></div>
+        <span class="binary-tag" id="binary-rules">1—5 小 · 6—10 大 · 奇数单 · 偶数双</span>
+      </header>
+      <form id="binary-settings-form" class="binary-settings-form">
+        <div class="binary-common-settings">
+          <label for="binary-lookback">回看连续期对<input id="binary-lookback" type="number" min="10" max="100" step="1" value="100" required></label>
+          <label for="binary-threshold">历史偏向门槛（%）<input id="binary-threshold" type="number" min="50" max="100" step="0.1" value="55" required></label>
+          <label for="binary-window">回测／账本范围<select id="binary-window"><option value="50">最近 50 期</option><option value="100">最近 100 期</option><option value="200">最近 200 期</option><option value="500">最近 500 期</option></select></label>
+        </div>
+        <div class="binary-play-settings">
+          <fieldset><legend>大小</legend>
+            <label for="binary-size-strategy">策略<select id="binary-size-strategy"><option value="transition">类别转移</option><option value="majority">近期多数</option><option value="minority">近期少数</option></select></label>
+            <label for="binary-size-stake">固定每注（元）<input id="binary-size-stake" type="number" min="0.01" max="1000000" step="0.01" value="10" required></label>
+            <label for="binary-size-odds">含本金返还（倍）<input id="binary-size-odds" type="number" min="0.01" max="10000" step="0.01" value="1.98" required></label>
+          </fieldset>
+          <fieldset><legend>单双</legend>
+            <label for="binary-parity-strategy">策略<select id="binary-parity-strategy"><option value="transition">类别转移</option><option value="majority">近期多数</option><option value="minority">近期少数</option></select></label>
+            <label for="binary-parity-stake">固定每注（元）<input id="binary-parity-stake" type="number" min="0.01" max="1000000" step="0.01" value="10" required></label>
+            <label for="binary-parity-odds">含本金返还（倍）<input id="binary-parity-odds" type="number" min="0.01" max="10000" step="0.01" value="1.98" required></label>
+          </fieldset>
+        </div>
+        <details class="binary-strategy-help"><summary>类别转移是什么意思？</summary><p>看同一位置的前后变化。例如冠军上期是“大”，就只统计历史中“大→下一期”的期对，再比较下一期是大还是小；单双同理，并不固定反买。回看 10 个期对需要 11 条连续开奖记录；10—19 期窗口至少一半期对为有效样本（向上取整），20 期及以上至少需要 20 个有效样本。近期多数／少数统计全部期对，类别转移只统计前一期类别与最新一期相同的期对。</p></details>
+        <div class="binary-form-footer"><p>1.98 倍为可修改的模拟示例：10 元命中返还 19.80 元。观望不投入，两种玩法不合并下注。</p><button class="button secondary" type="submit">应用预测参数</button></div>
+        <p id="binary-settings-error" class="input-error" role="alert" hidden></p>
+      </form>
+
+      <div class="binary-subheading"><h3>下一期预测</h3><p id="binary-prediction-caption" role="status">正在准备预测…</p></div>
+      <div class="table-scroll" tabindex="0" aria-label="各位置大小单双预测，可横向滚动">
+        <table class="binary-prediction-table"><thead><tr><th scope="col">车位</th><th scope="col">最新号码</th><th scope="col">大小预测</th><th scope="col">有效样本</th><th scope="col">大小回测命中率</th><th scope="col">单双预测</th><th scope="col">有效样本</th><th scope="col">单双回测命中率</th></tr></thead><tbody id="binary-predictions"></tbody></table>
+      </div>
+      <p class="table-note binary-note">表中回测命中率按当前参数逐期计算；已保存的实时预测沿用当期参数。历史占比是统计依据，两者均不代表下期成功概率。样本不足、持平或未达到门槛时观望；近期少数策略选择历史多数的相反类别。</p>
+
+      <div class="binary-subheading binary-record-heading">
+        <div class="window-tabs" id="binary-mode" role="group" aria-label="大小单双统计方式"><button type="button" data-binary-mode="replay" aria-pressed="true">历史回测</button><button type="button" data-binary-mode="live" aria-pressed="false">实时模拟账本</button></div>
+        <div class="binary-actions"><button class="button secondary" id="binary-toggle" type="button" hidden>开始跟踪</button><button class="button danger-outline" id="binary-clear" type="button" hidden>清空账本</button></div>
+      </div>
+      <div class="binary-context"><p id="binary-context"></p><p id="binary-status" role="status">正在计算回测…</p></div>
+      <div class="binary-summary" id="binary-summary" aria-label="大小单双统计汇总"></div>
+      <div class="table-scroll" tabindex="0" aria-label="大小单双完整统计，可横向滚动"><table><thead><tr><th scope="col">玩法</th><th scope="col">期数</th><th scope="col">预测注数</th><th scope="col">观望</th><th scope="col">参与率</th><th scope="col">命中</th><th scope="col">命中率</th><th scope="col">投入</th><th scope="col">返还</th><th scope="col">盈亏</th><th scope="col">ROI</th><th scope="col">最大回撤</th></tr></thead><tbody id="binary-stat-rows"></tbody></table></div>
+      <p class="table-note binary-note" id="binary-baseline"></p>
+      <details class="binary-details" id="binary-position-details"><summary id="binary-position-title">查看各位置的统计</summary><div class="table-scroll" tabindex="0" aria-label="各车位大小单双统计，可横向滚动"><table><thead><tr><th scope="col">车位／玩法</th><th scope="col">期数</th><th scope="col">预测注数</th><th scope="col">观望</th><th scope="col">参与率</th><th scope="col">命中</th><th scope="col">命中率</th><th scope="col">投入</th><th scope="col">返还</th><th scope="col">盈亏</th><th scope="col">ROI</th><th scope="col">最大回撤</th></tr></thead><tbody id="binary-position-rows"></tbody></table></div></details>
+      <details class="binary-details" id="binary-comparison"><summary>三策略历史对比 · 不自动选优</summary><p class="table-note binary-note">在相同数据、回看窗口和偏向门槛下比较。每种策略分别用于大小、单双；切换策略由你决定。下方可分别展开三种策略的各位置结果，无需修改实时使用的策略。</p><div class="table-scroll" tabindex="0" aria-label="三种预测策略历史对比，可横向滚动"><table><thead><tr><th scope="col">策略／玩法</th><th scope="col">期数</th><th scope="col">预测注数</th><th scope="col">观望</th><th scope="col">参与率</th><th scope="col">命中</th><th scope="col">命中率</th><th scope="col">投入</th><th scope="col">返还</th><th scope="col">盈亏</th><th scope="col">ROI</th><th scope="col">最大回撤</th></tr></thead><tbody id="binary-comparison-rows"></tbody></table></div><div id="binary-comparison-positions"></div></details>
+      <div class="binary-subheading"><h3 id="binary-record-title">逐期回测记录</h3><p>展开期次查看每个车位的预测与实际结果</p></div>
+      <div id="binary-rows" class="binary-rows"></div>
+      <div class="combo-more-wrap"><button class="button secondary" id="binary-more" type="button" hidden>显示更多</button></div>
     </section>
 
     <section class="settings panel" aria-labelledby="settings-title">
@@ -499,6 +644,7 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
       <p id="dataset-note">演示数据用于体验回测流程。</p>
       <button class="text-button" type="button" id="sample-reset">恢复演示数据</button>
     </footer>
+    </div>
   </main>
 
   <dialog id="game-dialog" aria-labelledby="game-dialog-title">
@@ -590,6 +736,16 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
       format: race,
       available: true,
       provider: api68("10037", "pks/getLotteryPksInfo.do", "pks/getPksHistoryList.do"),
+    },
+    {
+      id: "lucky10",
+      label: "澳洲幸运10",
+      sourceLabel: "澳洲幸运10 · API68",
+      format: race,
+      available: true,
+      provider: api68("10012", "pks/getLotteryPksInfo.do", "pks/getPksHistoryList.do"),
+      bootstrapDays: 4,
+      historyDays: 6,
     },
     {
       id: "lucky5",
@@ -2202,6 +2358,7 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
     const clearCancel = byId("combo-clear-cancel");
     const clearConfirm = byId("combo-clear-confirm");
     const games = new Map();
+    const removals = new Map();
     let activeId;
     let clearOwner;
     let clearBusy = false;
@@ -2232,14 +2389,35 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
     renderRecordLimit();
 
     function forGame({ id, engine, feed, ledger }) {
+      if (removals.has(id)) throw new Error("此盘口正在关闭，请稍后重新打开。");
       if (!games.has(id)) {
-        if (activeId === undefined) activeId = id;
+        if (activeId == null) activeId = id;
         games.set(id, createGame(elements, { engine, feed, ledger }, () => activeId === id, getRecordLimit));
       }
       return games.get(id);
     }
 
     function selectGame(id) {
+      if (id === null) {
+        activeId = null;
+        if (clearDialog.open) clearDialog.close();
+        if (!clearBusy) clearOwner = undefined;
+        rows.replaceChildren();
+        elements.summary.replaceChildren();
+        elements.hint.textContent = "";
+        elements.status.textContent = "";
+        delete elements.status.dataset.state;
+        toggle.hidden = true;
+        toggle.disabled = true;
+        clear.hidden = true;
+        clear.disabled = true;
+        if (more) more.hidden = true;
+        for (const button of modeGroup.querySelectorAll("[data-combo-mode]")) {
+          button.classList.remove("active");
+          button.setAttribute("aria-pressed", "false");
+        }
+        return;
+      }
       if (!games.has(id)) throw new Error("未找到对应的模拟盘口。");
       if (activeId !== id) {
         if (clearDialog.open && !clearBusy) clearDialog.close();
@@ -2247,6 +2425,23 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
         rows.replaceChildren();
       }
       current().render();
+    }
+
+    function removeGame(id) {
+      if (removals.has(id)) return removals.get(id);
+      const game = games.get(id);
+      if (!game) return Promise.resolve();
+      games.delete(id);
+      if (clearOwner === game) {
+        clearOwner = undefined;
+        if (clearDialog.open) clearDialog.close();
+      }
+      if (activeId === id) selectGame(null);
+      const removal = game.dispose();
+      removals.set(id, removal);
+      const finished = () => { if (removals.get(id) === removal) removals.delete(id); };
+      removal.then(finished, finished);
+      return removal;
     }
 
     modeGroup.addEventListener("click", (event) => {
@@ -2298,6 +2493,7 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
     return {
       forGame,
       selectGame,
+      removeGame,
       update: (next) => speed().update(next),
       onSnapshot: (snapshot) => speed().onSnapshot(snapshot),
       setFeedStatus: (next) => speed().setFeedStatus(next),
@@ -2327,6 +2523,8 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
     let clearingLedger = false;
     let clearNotice;
     let stopVersion = 0;
+    let disposed = false;
+    let disposal;
     const recoveryAttempts = new Map();
 
     function setStatus(message, state) {
@@ -2358,7 +2556,7 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
     }
 
     function renderReplay() {
-      if (!isActive()) return;
+      if (disposed || !context || !isActive()) return;
       const limit = getRecordLimit();
       const history = replayRows().slice(-limit);
       const { settings } = context;
@@ -2378,7 +2576,7 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
 
     function extendReplay() {
       const { extendHistory } = feed;
-      if (context.dataMode !== "live" || !cachedHistory.length || historyFlight || !extendHistory) return;
+      if (disposed || !context || context.dataMode !== "live" || !cachedHistory.length || historyFlight || !extendHistory) return;
       const required = context.settings.lookback + context.settings.window + replayLimit;
       if (cachedHistory.length >= required) return;
       if (historyAttempt?.required >= required && Date.now() - historyAttempt.time < durationToRetryHistory) return;
@@ -2387,20 +2585,20 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
       historyFlight = request;
       historyAttempt = { required, time: Date.now() };
       extendHistory(anchor, required, request.signal).then((extended) => {
-        if (historyFlight === request && context.dataMode === "live" && extended.length) {
+        if (!disposed && historyFlight === request && context.dataMode === "live" && extended.length) {
           cachedHistory = mergeDraws(extended, cachedHistory).slice(-1200);
         }
       }).catch(() => {
         // The current continuous history remains available while the provider recovers.
       }).finally(() => {
-        if (historyFlight !== request) return;
+        if (disposed || historyFlight !== request) return;
         historyFlight = null;
         if (view === "replay") renderReplay();
       });
     }
 
     function renderLive() {
-      if (!isActive()) return;
+      if (disposed || !context || !isActive()) return;
       const recent = ledgerState.rows.slice(-getRecordLimit());
       const pending = recent.filter((row) => row.status === "pending");
       const pendingCost = pending.reduce((sum, row) => engine.addComboCents(sum, row.cost), 0);
@@ -2426,9 +2624,13 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
 
     function enqueueLedger(action) {
       ledgerPromise = ledgerPromise.then(async () => {
+        if (disposed) return;
         try {
           await action();
-          ledgerState = await ledger.read();
+          if (disposed) return;
+          const fresh = await ledger.read();
+          if (disposed) return;
+          ledgerState = fresh;
           ledgerLoaded = true;
           ledgerError = false;
           if (clearNotice?.state === "ready" && ledgerState.rows.length) clearNotice = null;
@@ -2445,7 +2647,31 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
       recoveryAttempts.clear();
     }
 
+    function stopPendingWork() {
+      stopVersion += 1;
+      lastSnapshot = null;
+      liveMessage = "";
+      historyFlight?.abort();
+      historyFlight = null;
+      historyAttempt = undefined;
+      abortRecovery();
+    }
+
+    function dispose() {
+      if (disposal) return disposal;
+      disposed = true;
+      stopPendingWork();
+      // Stop any previously accepted transaction before allowing this game to reopen.
+      disposal = ledgerPromise.catch(() => {}).then(async () => {
+        await ledger.setEnabled(false);
+        ledgerState = { ...ledgerState, enabled: false };
+      });
+      ledgerPromise = disposal;
+      return disposal;
+    }
+
     function recoverPending(records, knownDraws) {
+      if (disposed) return;
       const { getDrawsOn } = feed;
       const last = knownDraws.at(-1);
       if (!getDrawsOn || !last) return;
@@ -2461,9 +2687,9 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
         const version = stopVersion;
         recoveryAttempts.set(day, attempt);
         getDrawsOn(day, request.signal).then((draws) => {
-          if (!request.signal.aborted && context.dataMode === "live") {
+          if (!disposed && !request.signal.aborted && context.dataMode === "live") {
             enqueueLedger(async () => {
-              if (request.signal.aborted || version !== stopVersion || context.dataMode !== "live") return;
+              if (disposed || request.signal.aborted || version !== stopVersion || context.dataMode !== "live") return;
               const settled = await ledger.settle(draws);
               if (settled.length && lastSnapshot && snapshotIsCurrent(lastSnapshot, version)) {
                 await processSnapshot(lastSnapshot, version);
@@ -2475,7 +2701,7 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
     }
 
     function snapshotIsCurrent(snapshot, version) {
-      return version === stopVersion && context.dataMode === "live" && feedStatus?.enabled && !document.hidden
+      return !disposed && version === stopVersion && context?.dataMode === "live" && feedStatus?.enabled && !document.hidden
         && snapshot === lastSnapshot && Date.now() - snapshot.receivedAt <= 20000;
     }
 
@@ -2492,10 +2718,11 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
     }
 
     async function processSnapshot(snapshot, version) {
-      if (version !== stopVersion || context.dataMode !== "live") return;
+      if (disposed || version !== stopVersion || context?.dataMode !== "live") return;
       await ledger.settle(snapshot.draws);
+      if (disposed || version !== stopVersion || context?.dataMode !== "live") return;
       const fresh = await ledger.read();
-      if (version !== stopVersion || context.dataMode !== "live") return;
+      if (disposed || version !== stopVersion || context?.dataMode !== "live") return;
       recoverPending(fresh.rows, snapshot.draws);
       if (!fresh.enabled || !snapshotIsCurrent(snapshot, version)) return;
       const targetIssue = upcomingTarget(snapshot, version);
@@ -2525,12 +2752,13 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
         liveMessage = "历史数据不足 · 等待更多开奖";
         return;
       }
+      if (!snapshotIsCurrent(snapshot, version)) return;
       const result = await ledger.record(plan, { scheduledAt: snapshot.scheduledAt, previousIssue: previous?.issue ?? null });
       liveMessage = result ? describeRecorded(result) : "等待接口确认下一期";
     }
 
     function render() {
-      if (!context || !isActive()) return;
+      if (disposed || !context || !isActive()) return;
       const limit = getRecordLimit();
       if (limit !== lastRecordLimit) {
         lastRecordLimit = limit;
@@ -2552,18 +2780,20 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
     }
 
     function selectView(nextView) {
-      if (nextView === view) return;
+      if (disposed || nextView === view) return;
       view = nextView;
       shown = pageSize;
       render();
     }
 
     function showMore() {
+      if (disposed) return;
       shown += pageSize;
       render();
     }
 
     function toggleTracking() {
+      if (disposed) return disposal;
       const enabled = !ledgerState.enabled;
       if (!enabled) stopVersion += 1;
       const version = stopVersion;
@@ -2583,6 +2813,7 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
     }
 
     function clearLedger() {
+      if (disposed) return disposal;
       if (clearingLedger) return;
       const throughIssue = upcomingTarget(lastSnapshot, stopVersion);
       stopVersion += 1;
@@ -2617,7 +2848,9 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
       showMore,
       toggleTracking,
       clearLedger,
+      dispose,
       update(next) {
+        if (disposed) return;
         const prior = context;
         context = { draws: next.draws, dataMode: next.dataMode, settings: next.settings };
         if (!prior || next.draws !== prior.draws || next.dataMode !== prior.dataMode) {
@@ -2634,13 +2867,14 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
         render();
       },
       onSnapshot(snapshot) {
-        if (context?.dataMode !== "live") return;
+        if (disposed || context?.dataMode !== "live") return;
         lastSnapshot = { ...snapshot, receivedAt: Date.now() };
         const received = lastSnapshot;
         const version = stopVersion;
         enqueueLedger(() => processSnapshot(received, version));
       },
       setFeedStatus(next) {
+        if (disposed) return;
         feedStatus = next;
         if (!next.enabled) {
           lastSnapshot = null;
@@ -2650,16 +2884,1378 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
         if (context && view === "live") renderLive();
       },
       pauseForSource() {
-        stopVersion += 1;
-        lastSnapshot = null;
-        liveMessage = "";
-        abortRecovery();
-        enqueueLedger(() => ledger.setEnabled(false));
+        if (disposed) return disposal;
+        stopPendingWork();
+        return enqueueLedger(() => ledger.setEnabled(false));
       },
     };
   }
 
   globalThis.TrackComboUI = { create };
+})();
+</script>
+  <dialog id="binary-clear-dialog" aria-labelledby="binary-clear-title" aria-describedby="binary-clear-description">
+    <div class="dialog-header"><h2 id="binary-clear-title">清空大小／单双账本？</h2></div>
+    <p class="privacy-note" id="binary-clear-description">将删除当前浏览器中大小、单双的全部实时记录，包括待开奖预测。清空后无法恢复；当前已确认的目标期不会重新录入。</p>
+    <div class="dialog-footer"><button class="button secondary" id="binary-clear-cancel" type="button" autofocus>取消</button><button class="button danger-solid" id="binary-clear-confirm" type="button">确认清空</button></div>
+  </dialog>
+  <script>(function () {
+  "use strict";
+
+  const plays = Object.freeze(["size", "parity"]);
+  const strategies = Object.freeze(["majority", "minority", "transition"]);
+  const labels = Object.freeze({ small: "小", big: "大", odd: "单", even: "双" });
+  const categories = Object.freeze({ size: ["small", "big"], parity: ["odd", "even"] });
+  const defaultSettings = Object.freeze({
+    lookback: 100, threshold: 55, window: 50,
+    size: Object.freeze({ strategy: "transition", stake: 10, odds: 1.98 }),
+    parity: Object.freeze({ strategy: "transition", stake: 10, odds: 1.98 }),
+  });
+  const minimumSamples = 20;
+  const maxSafeCents = BigInt(Number.MAX_SAFE_INTEGER);
+  const defaultFormat = Object.freeze({ positions: 10, min: 1, max: 10, unique: true });
+  const formatEngines = new WeakMap();
+
+  function classify(number, play, format) {
+    if (!Number.isInteger(number) || number < format.min || number > format.max) {
+      throw new Error(`开奖号码须为 ${format.min} 至 ${format.max} 的整数。`);
+    }
+    if (!plays.includes(play)) throw new Error("请选择大小或单双玩法。");
+    const midpoint = format.min + Math.floor((format.max - format.min) / 2);
+    return play === "size" ? (number <= midpoint ? "small" : "big") : (number % 2 ? "odd" : "even");
+  }
+
+  function stakeCents(stake) {
+    const scaled = stake * 100;
+    const cents = Math.round(scaled);
+    const tolerance = Number.EPSILON * Math.max(1, Math.abs(scaled)) * 2;
+    if (!Number.isFinite(stake) || stake <= 0 || stake > 1000000 || cents < 1
+      || Math.abs(scaled - cents) > tolerance) {
+      throw new Error("每注金额应为 0.01 至 1,000,000 元，最多保留两位小数。");
+    }
+    return cents;
+  }
+
+  function validateSettings(input = defaultSettings) {
+    if (!input || typeof input !== "object" || Array.isArray(input)) throw new Error("预测设置无效。");
+    const settings = {
+      lookback: input.lookback ?? defaultSettings.lookback,
+      threshold: input.threshold ?? defaultSettings.threshold,
+      window: input.window ?? defaultSettings.window,
+    };
+    if (!Number.isInteger(settings.lookback) || settings.lookback < 10 || settings.lookback > 100) {
+      throw new Error("预测回看期对数应为 10 至 100 的整数。");
+    }
+    if (!Number.isFinite(settings.threshold) || settings.threshold < 50 || settings.threshold > 100) {
+      throw new Error("优势占比门槛应为 50% 至 100%。");
+    }
+    if (![50, 100, 200, 500].includes(settings.window)) throw new Error("请选择有效的预测统计区间。");
+    for (const play of plays) {
+      const supplied = input[play];
+      if (supplied !== undefined && (!supplied || typeof supplied !== "object" || Array.isArray(supplied))) {
+        throw new Error("玩法设置无效。");
+      }
+      const value = { ...defaultSettings[play], ...supplied };
+      if (!strategies.includes(value.strategy)) throw new Error("请选择有效的预测策略。");
+      stakeCents(value.stake);
+      if (!Number.isFinite(value.odds) || value.odds <= 0 || value.odds > 10000) {
+        throw new Error("含本金返还倍数应大于 0 且不超过 10,000。");
+      }
+      settings[play] = { strategy: value.strategy, stake: value.stake, odds: value.odds };
+    }
+    return settings;
+  }
+
+  function issueString(value) {
+    if ((typeof value !== "string" && typeof value !== "bigint" && typeof value !== "number")
+      || (typeof value === "number" && (!Number.isSafeInteger(value) || value < 0))
+      || !/^\d+$/.test(String(value))) throw new Error("期号必须由数字组成。");
+    return String(value);
+  }
+
+  function validateDraw(draw, format) {
+    if (!draw || !Array.isArray(draw.numbers) || draw.numbers.length !== format.positions
+      || Array.from(draw.numbers).some((number) => !Number.isInteger(number) || number < format.min || number > format.max)
+      || (format.unique && new Set(draw.numbers).size !== format.positions)) {
+      throw new Error(`每期须包含 ${format.positions} 个 ${format.min} 至 ${format.max} 的整数号码${format.unique ? "，且不能重复" : ""}。`);
+    }
+    issueString(draw.id);
+  }
+
+  function validateDraws(draws, format) {
+    if (!Array.isArray(draws)) throw new Error("开奖记录应为数组。");
+    for (let index = 0; index < draws.length; index++) {
+      validateDraw(draws[index], format);
+      if (index && BigInt(draws[index].id) <= BigInt(draws[index - 1].id)) {
+        throw new Error("开奖记录须按期号递增排列，且不能重复。");
+      }
+    }
+  }
+
+  function adjacentByIssue(previous, next) {
+    return BigInt(next.id) === BigInt(previous.id) + 1n;
+  }
+
+  function emptySignal(play) {
+    return {
+      prediction: null, samples: 0, counts: Object.fromEntries(categories[play].map((category) => [category, 0])),
+      share: null, reason: "insufficient-history",
+    };
+  }
+
+  function signalFor(training, position, play, settings, format) {
+    const signal = emptySignal(play);
+    signal.minimumSamples = settings.lookback < 20 ? Math.ceil(settings.lookback / 2) : minimumSamples;
+    const strategy = settings[play].strategy;
+    const latestCategory = classify(training.at(-1).numbers[position], play, format);
+    for (let index = 1; index < training.length; index++) {
+      if (strategy === "transition" && classify(training[index - 1].numbers[position], play, format) !== latestCategory) continue;
+      signal.counts[classify(training[index].numbers[position], play, format)]++;
+      signal.samples++;
+    }
+    const [first, second] = categories[play];
+    const firstCount = signal.counts[first];
+    const secondCount = signal.counts[second];
+    signal.share = signal.samples ? Math.max(firstCount, secondCount) / signal.samples : null;
+    if (signal.samples < signal.minimumSamples) signal.reason = "insufficient-samples";
+    else if (firstCount === secondCount) signal.reason = "tie";
+    else if (Math.max(firstCount, secondCount) * 100 < settings.threshold * signal.samples) signal.reason = "weak";
+    else {
+      const majority = firstCount > secondCount ? first : second;
+      signal.prediction = strategy === "minority" ? (majority === first ? second : first) : majority;
+      signal.reason = null;
+    }
+    return signal;
+  }
+
+  function analyzeKnown(draws, settings, format) {
+    const required = settings.lookback + 1;
+    let start = Math.max(0, draws.length - 1);
+    while (start > 0 && draws.length - start < required && format.consecutive(draws[start - 1], draws[start])) start--;
+    const available = draws.length ? draws.length - start : 0;
+    const ready = available >= required;
+    const latest = draws.at(-1);
+    const training = ready ? draws.slice(-required) : [];
+    return {
+      ready, required, available, latestIssue: latest ? issueString(latest.id) : null,
+      positions: Array.from({ length: format.positions }, (_, position) => ({
+        position: position + 1,
+        number: latest?.numbers[position] ?? null,
+        ...Object.fromEntries(plays.map((play) => [play,
+          ready ? signalFor(training, position, play, settings, format) : emptySignal(play),
+        ])),
+      })),
+    };
+  }
+
+  function analyze(draws, input, format) {
+    const settings = validateSettings(input);
+    validateDraws(draws, format);
+    return analyzeKnown(draws, settings, format);
+  }
+
+  function createKnownPlan(draws, settings, target, format) {
+    const analysis = analyzeKnown(draws, settings, format);
+    if (!analysis.ready) return null;
+    const issue = issueString(target && typeof target === "object" ? target.id : target);
+    const targetDraw = target && typeof target === "object" ? { ...target, id: issue } : { id: issue };
+    if (!format.consecutive(draws.at(-1), targetDraw)) throw new Error("预测目标期号须紧接最新已开奖期号。");
+    const predictions = analysis.positions.flatMap(({ position, ...signals }) => plays.map((play) => ({
+      position, play, ...signals[play],
+    })));
+    const active = predictions.filter(({ prediction }) => prediction !== null);
+    return {
+      issue, previousIssue: analysis.latestIssue, strategyVersion: 1, settings: validateSettings(settings), predictions,
+      bets: active.length,
+      cost: active.reduce((sum, { play }) => sum + stakeCents(settings[play].stake), 0),
+    };
+  }
+
+  function createPlan(draws, input, target, format) {
+    const settings = validateSettings(input);
+    validateDraws(draws, format);
+    return createKnownPlan(draws, settings, target, format);
+  }
+
+  function centsValue(value) {
+    return value >= -maxSafeCents && value <= maxSafeCents ? Number(value) : value;
+  }
+
+  function payout(stake, odds) {
+    const [mantissa, exponent = "0"] = String(odds).split("e");
+    const [whole, fraction = ""] = mantissa.split(".");
+    const places = fraction.length - Number(exponent);
+    const units = BigInt(whole + fraction);
+    if (places <= 0) return BigInt(stake) * units * (10n ** BigInt(-places));
+    const divisor = 10n ** BigInt(places);
+    return (BigInt(stake) * units * 2n + divisor) / (2n * divisor);
+  }
+
+  function settle(plan, draw, format) {
+    validateDraw(draw, format);
+    if (!plan || BigInt(issueString(plan.issue)) !== BigInt(draw.id)) throw new Error("请使用预测目标期号的开奖结果结算。");
+    const settings = validateSettings(plan.settings);
+    if (!Array.isArray(plan.predictions) || plan.predictions.length !== format.positions * plays.length) {
+      throw new Error(`预测计划须包含 ${format.positions} 个位置的大小及单双记录。`);
+    }
+    const seen = new Set();
+    const results = Array.from(plan.predictions, (prediction) => {
+      if (!prediction || typeof prediction !== "object") throw new Error("预测计划的逐项记录无效。");
+      const { position, play } = prediction;
+      const key = `${position}:${play}`;
+      if (!Number.isInteger(position) || position < 1 || position > format.positions || !plays.includes(play) || seen.has(key)
+        || (prediction.prediction !== null && !categories[play].includes(prediction.prediction))) {
+        throw new Error("预测计划的车位或类别无效。");
+      }
+      seen.add(key);
+      const number = draw.numbers[position - 1];
+      const actual = classify(number, play, format);
+      const hit = prediction.prediction === null ? null : prediction.prediction === actual;
+      const cost = hit === null ? 0 : stakeCents(settings[play].stake);
+      const returns = hit ? Number(payout(cost, settings[play].odds)) : 0;
+      return { ...prediction, number, actual, hit, cost, returns, profit: returns - cost };
+    });
+    const bets = results.filter(({ hit }) => hit !== null).length;
+    const cost = results.reduce((sum, result) => sum + result.cost, 0);
+    const returns = results.reduce((sum, result) => sum + result.returns, 0);
+    if (plan.bets !== bets || plan.cost !== cost) throw new Error("预测计划的投入快照与逐项记录不一致。");
+    return {
+      ...plan, status: bets ? "settled" : "skipped", results, hits: results.filter(({ hit }) => hit === true).length,
+      returns, profit: returns - cost,
+    };
+  }
+
+  function replay(draws, input, limit, format) {
+    const settings = validateSettings(input);
+    validateDraws(draws, format);
+    const window = limit ?? settings.window;
+    if (!Number.isSafeInteger(window) || window < 0) throw new Error("预测回放期数应为非负整数。");
+    const rows = [];
+    for (let index = Math.max(0, draws.length - window); index < draws.length; index++) {
+      if (index > 0 && !format.consecutive(draws[index - 1], draws[index])) continue;
+      // Fix the complete plan using only records strictly before this target.
+      const plan = createKnownPlan(draws.slice(0, index), settings, draws[index], format);
+      if (plan) rows.push(settle(plan, draws[index], format));
+    }
+    return rows;
+  }
+
+  function emptyMetrics(keys) {
+    return {
+      rounds: 0, opportunities: 0, bets: 0, observations: 0, hits: 0,
+      cost: 0n, returns: 0n, profit: 0n, maxDrawdown: 0n,
+      _peak: 0n, _baselineCounts: Object.fromEntries(keys.map((key) => [key, 0])),
+      _playCounts: { size: 0, parity: 0 },
+    };
+  }
+
+  function ratio(numerator, denominator) {
+    return denominator === 0 || denominator === 0n ? null : Number(numerator) / Number(denominator);
+  }
+
+  function finishMetrics(metric) {
+    const baseline = Object.fromEntries(Object.entries(metric._baselineCounts).map(([category, count]) => [
+      category, ratio(count, metric._playCounts[categories.size.includes(category) ? "size" : "parity"]),
+    ]));
+    return {
+      rounds: metric.rounds, opportunities: metric.opportunities, bets: metric.bets,
+      observations: metric.observations, hits: metric.hits,
+      participation: ratio(metric.bets, metric.opportunities), hitRate: ratio(metric.hits, metric.bets),
+      cost: centsValue(metric.cost), returns: centsValue(metric.returns), profit: centsValue(metric.profit),
+      roi: ratio(metric.profit, metric.cost), maxDrawdown: centsValue(metric.maxDrawdown), baseline,
+    };
+  }
+
+  function summarize(rows, format) {
+    if (!Array.isArray(rows)) throw new Error("预测记录应为数组。");
+    const total = emptyMetrics(Object.keys(labels));
+    const size = emptyMetrics(categories.size);
+    const parity = emptyMetrics(categories.parity);
+    const positions = Array.from({ length: format.positions }, (_, index) => ({
+      position: index + 1, size: emptyMetrics(categories.size), parity: emptyMetrics(categories.parity),
+    }));
+    const chronological = rows.filter((row) => row.status === "settled" || row.status === "skipped")
+      .sort((left, right) => {
+        const from = BigInt(issueString(left.issue));
+        const to = BigInt(issueString(right.issue));
+        return from < to ? -1 : from > to ? 1 : 0;
+      });
+    for (const row of chronological) {
+      const touched = new Set();
+      for (const result of row.results) {
+        const { position, play, actual, hit } = result;
+        if (!Number.isInteger(position) || position < 1 || position > format.positions || !plays.includes(play)
+          || !categories[play].includes(actual)) throw new Error("已结算预测记录无效。");
+        const groups = [total, play === "size" ? size : parity, positions[position - 1][play]];
+        for (const metric of groups) {
+          touched.add(metric);
+          metric.opportunities++;
+          metric._playCounts[play]++;
+          metric._baselineCounts[actual]++;
+          metric.bets += Number(hit !== null);
+          metric.observations += Number(hit === null);
+          metric.hits += Number(hit === true);
+          metric.cost += BigInt(result.cost);
+          metric.returns += BigInt(result.returns);
+          metric.profit += BigInt(result.profit);
+        }
+      }
+      // Drawdown is measured once after all positions and both plays in a period settle.
+      for (const metric of touched) {
+        metric.rounds++;
+        if (metric.profit > metric._peak) metric._peak = metric.profit;
+        const drawdown = metric._peak - metric.profit;
+        if (drawdown > metric.maxDrawdown) metric.maxDrawdown = drawdown;
+      }
+    }
+    return {
+      total: finishMetrics(total), size: finishMetrics(size), parity: finishMetrics(parity),
+      positions: positions.map((position) => ({
+        position: position.position, size: finishMetrics(position.size), parity: finishMetrics(position.parity),
+      })),
+    };
+  }
+
+  function forFormat(input) {
+    if (!input || typeof input !== "object") throw new Error("开奖格式无效。");
+    if (formatEngines.has(input)) return formatEngines.get(input);
+    const { positions, min, max, unique, consecutive = adjacentByIssue } = input;
+    const size = max - min + 1;
+    if (![positions, min, max].every(Number.isSafeInteger) || positions < 1 || positions > 10
+      || min < 0 || size < 2 || size > 31 || typeof unique !== "boolean" || (unique && positions > size)
+      || typeof consecutive !== "function") throw new Error("开奖格式无效。");
+    const description = Object.freeze({ positions, min, max, unique });
+    const format = { ...description, consecutive };
+    const engine = Object.freeze({
+      defaultSettings, plays, strategies, labels, format: description, validateSettings,
+      classify: (number, play) => classify(number, play, format),
+      analyze: (draws, settings) => analyze(draws, settings, format),
+      createPlan: (draws, settings, target) => createPlan(draws, settings, target, format),
+      settle: (plan, draw) => settle(plan, draw, format),
+      replay: (draws, settings, limit) => replay(draws, settings, limit, format),
+      summarize: (rows) => summarize(rows, format),
+    });
+    formatEngines.set(input, engine);
+    return engine;
+  }
+
+  globalThis.TrackBinary = Object.freeze({ ...forFormat(defaultFormat), forFormat });
+})();
+</script>
+  <script>(function () {
+  "use strict";
+
+  const defaultDatabaseName = "track-lab-binary-ledger-speed";
+  const enabledKey = "enabled";
+  const latestConfirmedKey = "latestConfirmedIssue";
+  const clearedThroughKey = "clearedThroughIssue";
+
+  function issueKey(issue) {
+    if (!/^\d+$/.test(String(issue))) throw new Error("分类预测账本期号必须由数字组成。");
+    return BigInt(issue).toString();
+  }
+
+  function greatestIssue(keys, greatest = null) {
+    for (const key of keys) {
+      const issue = BigInt(key);
+      if (greatest === null || issue > greatest) greatest = issue;
+    }
+    return greatest;
+  }
+
+  function create({ databaseName = defaultDatabaseName, engine = globalThis.TrackBinary } = {}) {
+    let opening;
+
+    function open() {
+      if (opening) return opening;
+      opening = new Promise((resolve, reject) => {
+        if (!globalThis.indexedDB) {
+          reject(new Error("此浏览器无法打开分类预测账本存储。"));
+          return;
+        }
+        const request = indexedDB.open(databaseName, 1);
+        request.onupgradeneeded = () => {
+          const database = request.result;
+          database.createObjectStore("meta");
+          database.createObjectStore("rows").createIndex("status", "status");
+        };
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+          const database = request.result;
+          database.onversionchange = () => {
+            database.close();
+            opening = undefined;
+          };
+          database.onclose = () => { opening = undefined; };
+          resolve(database);
+        };
+      }).catch((error) => {
+        opening = undefined;
+        throw error;
+      });
+      return opening;
+    }
+
+    async function transact(stores, mode, execute) {
+      const database = await open();
+      return new Promise((resolve, reject) => {
+        const transaction = database.transaction(stores, mode);
+        let result;
+        let failure;
+        const check = (work) => {
+          try {
+            work();
+          } catch (error) {
+            failure = error;
+            transaction.abort();
+          }
+        };
+        transaction.oncomplete = () => resolve(result);
+        transaction.onabort = () => reject(failure ?? transaction.error ?? new Error("分类预测账本事务已中止。"));
+        const store = (name) => transaction.objectStore(name);
+        const receive = (request, work) => {
+          request.onsuccess = () => check(() => work(request.result));
+        };
+        check(() => execute(store, receive, (value) => { result = value; }));
+      });
+    }
+
+    function read() {
+      return transact(["meta", "rows"], "readonly", (store, receive, returnValue) => {
+        const snapshot = { enabled: false, rows: [], clearedThrough: null };
+        const meta = store("meta");
+        receive(meta.get(enabledKey), (enabled) => { snapshot.enabled = enabled === true; });
+        receive(meta.get(clearedThroughKey), (issue) => { snapshot.clearedThrough = issue ?? null; });
+        receive(store("rows").getAll(), (rows) => {
+          snapshot.rows = rows.sort((left, right) => {
+            const first = BigInt(left.issue);
+            const second = BigInt(right.issue);
+            return first < second ? -1 : first > second ? 1 : 0;
+          });
+        });
+        returnValue(snapshot);
+      });
+    }
+
+    function setEnabled(enabled) {
+      return transact(["meta"], "readwrite", (store, receive, returnValue) => {
+        const value = enabled === true;
+        store("meta").put(value, enabledKey);
+        returnValue(value);
+      });
+    }
+
+    async function record(plan, { scheduledAt, previousIssue } = {}) {
+      const key = issueKey(plan.issue);
+      const issue = BigInt(key);
+      const expected = previousIssue == null ? previousIssue : BigInt(issueKey(previousIssue));
+      // Freeze settings and predictions before yielding to another tab or caller.
+      const snapshot = structuredClone(plan);
+      return transact(["meta", "rows"], "readwrite", (store, receive, returnValue) => {
+        const rows = store("rows");
+        const meta = store("meta");
+        let current;
+        let enabled;
+        let confirmed;
+        let clearedThrough;
+        let latest;
+        receive(rows.get(key), (value) => { current = value; });
+        receive(meta.get(enabledKey), (value) => { enabled = value; });
+        receive(meta.get(latestConfirmedKey), (value) => { confirmed = value; });
+        receive(meta.get(clearedThroughKey), (value) => { clearedThrough = value; });
+        receive(rows.getAllKeys(), (keys) => { latest = greatestIssue(keys); });
+        receive(rows.index("status").getAllKeys("pending"), (pending) => {
+          if (current) {
+            returnValue(current);
+            return;
+          }
+          const createdAt = Date.now();
+          if (enabled !== true || !Number.isFinite(scheduledAt) || scheduledAt <= createdAt
+            || (confirmed !== undefined && BigInt(confirmed) >= issue)
+            || (clearedThrough !== undefined && BigInt(clearedThrough) >= issue)
+            || (latest !== null && latest >= issue)
+            || (expected !== undefined && latest !== expected)
+            || pending.some((pendingKey) => BigInt(pendingKey) < issue)) {
+            returnValue(null);
+            return;
+          }
+          // Observation-only rounds remain pending so their actuals and baselines are preserved.
+          const row = { ...snapshot, createdAt, scheduledAt, status: "pending" };
+          rows.add(row, key);
+          returnValue(row);
+        });
+      });
+    }
+
+    async function settle(draws) {
+      const actuals = new Map();
+      let latest = null;
+      for (const draw of draws) {
+        const key = issueKey(draw.id);
+        actuals.set(key, structuredClone(draw));
+        latest = greatestIssue([key], latest);
+      }
+      if (!actuals.size) return [];
+      return transact(["meta", "rows"], "readwrite", (store, receive, returnValue) => {
+        const meta = store("meta");
+        const rows = store("rows");
+        receive(meta.get(latestConfirmedKey), (confirmed) => {
+          if (confirmed === undefined || latest > BigInt(confirmed)) meta.put(latest.toString(), latestConfirmedKey);
+        });
+        receive(rows.index("status").getAll("pending"), (pending) => {
+          const settled = [];
+          for (const plan of pending) {
+            const key = issueKey(plan.issue);
+            const actual = actuals.get(key);
+            if (!actual) continue;
+            const row = { ...engine.settle(plan, actual), settledAt: Date.now() };
+            rows.put(row, key);
+            settled.push(row);
+          }
+          returnValue(settled);
+        });
+      });
+    }
+
+    function clear(throughIssue) {
+      let cutoff = throughIssue == null ? null : BigInt(issueKey(throughIssue));
+      return transact(["meta", "rows"], "readwrite", (store, receive, returnValue) => {
+        const meta = store("meta");
+        const rows = store("rows");
+        receive(rows.getAllKeys(), (keys) => { cutoff = greatestIssue(keys, cutoff); });
+        receive(meta.get(clearedThroughKey), (previous) => {
+          if (previous !== undefined) cutoff = greatestIssue([previous], cutoff);
+          const value = cutoff?.toString() ?? null;
+          if (value !== null && value !== previous) meta.put(value, clearedThroughKey);
+          rows.clear();
+          returnValue(value);
+        });
+      });
+    }
+
+    return { read, setEnabled, record, settle, clear };
+  }
+
+  const ledgers = new Map();
+  const speedLedger = { create, ...create(), forGame };
+  ledgers.set("speed", speedLedger);
+
+  function forGame(id, engine = globalThis.TrackBinary) {
+    if (typeof id !== "string" || !/^[a-z][a-z0-9-]*$/.test(id)) throw new Error("盘口标识无效。");
+    if (!engine || typeof engine.settle !== "function") throw new Error("分类预测引擎无效。");
+    if (!ledgers.has(id)) ledgers.set(id, create({ databaseName: `track-lab-binary-ledger-${id}`, engine }));
+    return ledgers.get(id);
+  }
+
+  globalThis.TrackBinaryLedger = speedLedger;
+}());
+</script>
+  <script>(function () {
+  "use strict";
+
+  const playNames = { size: "大小", parity: "单双" };
+  const strategyNames = { majority: "近期多数", minority: "近期少数", transition: "类别转移" };
+  const reasonNames = {
+    "insufficient-history": "连续历史不足",
+    "insufficient-samples": "条件样本不足",
+    tie: "两类持平",
+    weak: "历史偏向未达到门槛",
+  };
+  const byId = (id) => document.getElementById(id);
+  const numberFormat = new Intl.NumberFormat("zh-CN");
+  const percentFormat = new Intl.NumberFormat("zh-CN", { style: "percent", minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const compareIssues = (a, b) => BigInt(a) < BigInt(b) ? -1 : BigInt(a) > BigInt(b) ? 1 : 0;
+
+  function node(tag, className, text) {
+    const element = document.createElement(tag);
+    if (className) element.className = className;
+    if (text !== undefined) element.textContent = text;
+    return element;
+  }
+
+  function money(value = 0, signed = false) {
+    const amount = typeof value === "bigint" ? value : BigInt(Math.round(value));
+    const absolute = amount < 0n ? -amount : amount;
+    const sign = amount < 0n ? "−" : signed && amount > 0n ? "+" : "";
+    return sign + numberFormat.format(absolute / 100n) + "." + String(absolute % 100n).padStart(2, "0");
+  }
+
+  function percent(value) {
+    return typeof value === "number" && Number.isFinite(value) ? percentFormat.format(value) : "—";
+  }
+
+  function tone(value) {
+    return value > 0 ? "positive" : value < 0 ? "negative" : "";
+  }
+
+  function drawDay(epoch) {
+    return new Date(epoch + 8 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  }
+
+  function drawTime(epoch) {
+    return new Date(epoch + 8 * 60 * 60 * 1000).toISOString().slice(0, 19).replace("T", " ");
+  }
+
+  function positionName(engine, position) {
+    return `第 ${position} ${engine.format?.unique === false ? "位" : "名"}`;
+  }
+
+  function loadSettings(engine, settingsKey) {
+    try {
+      const saved = JSON.parse(localStorage.getItem(settingsKey));
+      if (saved) return engine.validateSettings(saved);
+    } catch {
+      // Defaults also work when browser storage is disabled.
+    }
+    return engine.validateSettings(engine.defaultSettings);
+  }
+
+  function statisticRow(label, stat) {
+    const row = node("tr");
+    const cells = [
+      label, stat.rounds, stat.bets, stat.observations, percent(stat.participation), stat.hits,
+      percent(stat.hitRate), money(stat.cost), money(stat.returns), money(stat.profit, true),
+      percent(stat.roi), money(stat.maxDrawdown),
+    ];
+    cells.forEach((value, index) => {
+      const cell = node(index === 0 ? "th" : "td", index === 9 ? tone(stat.profit) : "", String(value));
+      if (index === 0) cell.scope = "row";
+      row.append(cell);
+    });
+    return row;
+  }
+
+  function positionStatisticRows(engine, positions) {
+    return positions.flatMap((position) => engine.plays.map((play) =>
+      statisticRow(`${positionName(engine, position.position)}／${playNames[play]}`, position[play]),
+    ));
+  }
+
+  function resultTable(engine, row) {
+    const scroll = node("div", "table-scroll");
+    scroll.tabIndex = 0;
+    scroll.setAttribute("aria-label", `第 ${row.issue} 期各车位预测和结果`);
+    const table = node("table");
+    const head = node("thead");
+    const heading = node("tr");
+    ["车位", "玩法", "策略", "预测", "样本", "实际号码", "实际类别", "结果", "投入", "返还", "盈亏"].forEach((label) => {
+      const cell = node("th", "", label);
+      cell.scope = "col";
+      heading.append(cell);
+    });
+    head.append(heading);
+    const body = node("tbody");
+    for (const item of row.results ?? row.predictions ?? []) {
+      const result = node("tr");
+      const waiting = row.status === "pending";
+      const outcome = waiting ? item.prediction ? "待开奖" : "观望" : item.hit === null ? "观望" : item.hit ? "命中" : "未中";
+      const values = [
+        positionName(engine, item.position), playNames[item.play], strategyNames[row.settings[item.play].strategy],
+        item.prediction ? engine.labels[item.prediction] : "观望", item.samples,
+        item.number ?? "—", engine.labels[item.actual] ?? "—", outcome,
+        money(item.cost ?? (item.prediction ? Math.round(row.settings[item.play].stake * 100) : 0)),
+        waiting ? "—" : money(item.returns), waiting ? "—" : money(item.profit, true),
+      ];
+      values.forEach((value, index) => {
+        result.append(node("td", index === 7 && !waiting && item.hit !== null ? item.hit ? "positive" : "negative" : "", String(value)));
+      });
+      body.append(result);
+    }
+    table.append(head, body);
+    scroll.append(table);
+    return scroll;
+  }
+
+  function recordRow(engine, row, open) {
+    const details = node("details", "binary-record");
+    details.dataset.issue = row.issue;
+    details.open = open;
+    const summary = node("summary");
+    const state = row.status === "pending" ? "待开奖" : row.status === "skipped" ? "全部观望" : `${row.hits}／${row.bets} 命中`;
+    summary.append(node("strong", "", `第 ${row.issue} 期`), node("span", "binary-record-state", state));
+    const amounts = node("span", "binary-record-amounts");
+    amounts.append(node("span", "", `投入 ${money(row.cost)}`), node("strong", row.status === "pending" ? "" : tone(row.profit), row.status === "pending" ? "等待结算" : money(row.profit, true)));
+    summary.append(amounts);
+    details.append(summary);
+    const info = node("p", "binary-record-meta", `大小：${strategyNames[row.settings.size.strategy]}，${row.settings.size.odds} 倍；单双：${strategyNames[row.settings.parity.strategy]}，${row.settings.parity.odds} 倍。回看 ${row.settings.lookback} 个期对，门槛 ${row.settings.threshold}%。`);
+    if (row.createdAt) info.textContent += ` 开奖前保存于 ${new Date(row.createdAt).toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false })}（北京时间）。`;
+    details.append(info);
+    // Materialize the larger detail table only when it is opened.
+    let built = false;
+    const fill = () => {
+      if (details.open && !built) {
+        built = true;
+        details.append(resultTable(engine, row));
+      }
+    };
+    details.addEventListener("toggle", fill);
+    fill();
+    return details;
+  }
+
+  function createController(manager, { id, game, engine, feed, ledger }) {
+    const panel = byId("binary-panel");
+    const settingsKey = `track-lab-binary-settings-${id}`;
+    const format = engine.format ?? game.format ?? { positions: 10, min: 1, max: 10, unique: true };
+    let settings = loadSettings(engine, settingsKey);
+    let context = null;
+    let closed = false;
+    let disposal = null;
+    let sourcePaused = false;
+    let history = [];
+    let historyFlight = null;
+    let historyAttempt = null;
+    let memo = null;
+    let view = "replay";
+    let shown = 20;
+    let feedStatus = { enabled: false, state: "connecting" };
+    let lastSnapshot = null;
+    let latestConfirmedTarget = null;
+    let version = 0;
+    let ledgerState = { enabled: false, rows: [], clearedThrough: null };
+    let ledgerLoaded = false;
+    let ledgerError = false;
+    let ledgerQueue = Promise.resolve();
+    let busy = false;
+    let clearing = false;
+    let liveMessage = "";
+    let notice = "";
+    const recoveryAttempts = new Map();
+    const comparisonPositions = manager.comparisonPositions;
+
+    function isActive() {
+      return !closed && manager.isActive(id);
+    }
+
+    function showSettings() {
+      byId("binary-lookback").value = settings.lookback;
+      byId("binary-threshold").value = settings.threshold;
+      byId("binary-window").value = settings.window;
+      for (const play of engine.plays) {
+        for (const field of ["strategy", "stake", "odds"]) byId(`binary-${play}-${field}`).value = settings[play][field];
+      }
+    }
+
+    function replayData() {
+      const key = JSON.stringify(settings);
+      if (memo?.history !== history || memo?.key !== key) {
+        const rows = engine.replay(history, settings, settings.window);
+        memo = { history, key, rows, stats: engine.summarize(rows), comparisons: null };
+      }
+      return memo;
+    }
+
+    function comparisonData() {
+      const data = replayData();
+      if (!data.comparisons) {
+        data.comparisons = engine.strategies.map((strategy) => {
+          const compared = { ...settings, size: { ...settings.size, strategy }, parity: { ...settings.parity, strategy } };
+          return { strategy, stats: engine.summarize(engine.replay(history, compared, settings.window)) };
+        });
+      }
+      return data.comparisons;
+    }
+
+    function renderComparisons() {
+      if (!isActive() || !context || view !== "replay" || !byId("binary-comparison").open) return;
+      const comparedData = comparisonData();
+      const rows = [];
+      for (const compared of comparedData) {
+        for (const play of ["total", ...engine.plays]) {
+          rows.push(statisticRow(`${strategyNames[compared.strategy]}／${play === "total" ? "合计" : playNames[play]}`, compared.stats[play]));
+        }
+      }
+      byId("binary-comparison-rows").replaceChildren(...rows);
+      renderComparisonPositions(comparedData);
+    }
+
+    function renderComparisonPositions(comparedData) {
+      for (const compared of comparedData) {
+        const item = comparisonPositions.get(compared.strategy);
+        if (!item.details.open || item.stats === compared.stats) continue;
+        if (!item.body) {
+          const scroll = node("div", "table-scroll");
+          scroll.tabIndex = 0;
+          scroll.setAttribute("aria-label", `${strategyNames[compared.strategy]}各车位大小单双统计，可横向滚动`);
+          const table = node("table");
+          const head = node("thead");
+          const heading = node("tr");
+          ["车位／玩法", "期数", "预测注数", "观望", "参与率", "命中", "命中率", "投入", "返还", "盈亏", "ROI", "最大回撤"].forEach((label) => {
+            const cell = node("th", "", label);
+            cell.scope = "col";
+            heading.append(cell);
+          });
+          head.append(heading);
+          item.body = node("tbody");
+          item.body.id = `binary-compare-position-rows-${compared.strategy}`;
+          table.append(head, item.body);
+          scroll.append(table);
+          item.details.append(scroll);
+        }
+        item.body.replaceChildren(...positionStatisticRows(engine, compared.stats.positions));
+        item.stats = compared.stats;
+      }
+    }
+
+    function renderPredictions() {
+      const analysis = engine.analyze(context.draws, settings);
+      const stats = replayData().stats;
+      const latestIssue = context.draws.at(-1)?.id;
+      const pending = context.dataMode === "live" ? ledgerState.rows.findLast((row) => row.status === "pending" && (!latestIssue || compareIssues(row.issue, latestIssue) > 0)) : null;
+      const rows = analysis.positions.map((position) => {
+        const row = node("tr");
+        row.dataset.position = position.position;
+        row.append(node("th", "", positionName(engine, position.position)), node("td", "binary-latest-number", position.number ?? "—"));
+        row.firstChild.scope = "row";
+        for (const play of engine.plays) {
+          const signal = pending?.predictions.find((item) => item.position === position.position && item.play === play) ?? position[play];
+          const prediction = node("td", signal.prediction ? "binary-pick" : "binary-observe");
+          prediction.dataset.play = play;
+          prediction.append(node("strong", "", signal.prediction ? engine.labels[signal.prediction] : "观望"));
+          const evidence = Object.entries(signal.counts ?? {}).map(([label, count]) => `${engine.labels[label]} ${count}`).join("／");
+          const reason = signal.reason === "insufficient-samples"
+            ? `条件样本不足 ${signal.minimumSamples ?? 20} 个` : reasonNames[signal.reason] ?? "观望";
+          prediction.append(node("small", "", signal.reason ? reason : evidence));
+          if (evidence) prediction.title = `历史分类次数：${evidence}。历史占比不是成功概率。`;
+          const historical = stats.positions.find((item) => item.position === position.position)?.[play];
+          row.append(prediction, node("td", "", String(signal.samples)), node("td", "", percent(historical?.hitRate)));
+        }
+        return row;
+      });
+      byId("binary-predictions").replaceChildren(...rows);
+      let caption;
+      if (pending) {
+        caption = `第 ${pending.issue} 期已保存 · 大小：${strategyNames[pending.settings.size.strategy]}，单双：${strategyNames[pending.settings.parity.strategy]}；显示当期固定预测。历史命中率按当前参数回测，新参数从尚未记录的期次生效`;
+      } else if (!analysis.ready) {
+        caption = `连续开奖 ${analysis.available}／${analysis.required} 期 · 历史不足，暂时观望`;
+      } else {
+        const target = upcomingTarget(lastSnapshot, version);
+        caption = `基于第 ${analysis.latestIssue} 期 · ${target ? `第 ${target} 期预测预览` : "下一期预测预览，目标期号待接口确认"}`;
+        if (context.dataMode !== "live") caption += context.dataMode === "csv" ? " · 导入数据，仅供回测" : " · 演示／缓存数据，仅供回测";
+      }
+      byId("binary-prediction-caption").textContent = caption;
+    }
+
+    function renderStatistics(stats) {
+      const total = stats.total;
+      const metrics = [
+        ["有效预测", numberFormat.format(total.bets)], ["历史命中率", percent(total.hitRate)],
+        ["参与率", percent(total.participation)], ["净盈亏（元）", money(total.profit, true), tone(total.profit)],
+        ["最大回撤（元）", money(total.maxDrawdown)],
+      ];
+      byId("binary-summary").replaceChildren(...metrics.map(([label, value, className]) => {
+        const item = node("div");
+        item.append(node("span", "", label), node("strong", className ?? "", value));
+        return item;
+      }));
+      byId("binary-stat-rows").replaceChildren(statisticRow("合计", total), ...engine.plays.map((play) => statisticRow(playNames[play], stats[play])));
+      byId("binary-position-rows").replaceChildren(...positionStatisticRows(engine, stats.positions));
+      const baseline = ["small", "big", "odd", "even"].map((label) => {
+        const stat = label === "small" || label === "big" ? stats.size : stats.parity;
+        return `固定选${engine.labels[label]} ${percent(stat.baseline[label])}`;
+      }).join(" · ");
+      byId("binary-baseline").textContent = `${baseline}。对照包含观望车位的实际结果；理论随机选边约为 50%。最大回撤按逐期累计净盈亏计算，待开奖投入不计入已结算统计。`;
+    }
+
+    function renderRecords(rows) {
+      const container = byId("binary-rows");
+      const open = new Set(Array.from(container.querySelectorAll("details[open]"), (item) => item.dataset.issue));
+      const focused = document.activeElement?.closest("#binary-rows details")?.dataset.issue;
+      const selected = rows.slice().reverse().slice(0, shown);
+      container.replaceChildren(...(selected.length ? selected.map((row) => recordRow(engine, row, open.has(row.issue))) : [node("p", "binary-empty", view === "live" ? "暂无实时模拟记录。连接真实开奖后，可开始跟踪。" : "暂无可回测期次，正在等待足够的连续开奖记录。") ]));
+      if (focused) container.querySelector(`[data-issue="${focused}"] > summary`)?.focus({ preventScroll: true });
+      const more = byId("binary-more");
+      more.hidden = selected.length >= rows.length;
+      more.textContent = `显示更多（${selected.length}／${rows.length}）`;
+    }
+
+    function render() {
+      if (!context || !isActive()) return;
+      panel.hidden = false;
+      const replay = replayData();
+      const rows = view === "replay" ? replay.rows : ledgerState.rows.slice(-settings.window);
+      const stats = view === "replay" ? replay.stats : engine.summarize(rows);
+      for (const button of byId("binary-mode").querySelectorAll("[data-binary-mode]")) button.setAttribute("aria-pressed", String(button.dataset.binaryMode === view));
+      const toggle = byId("binary-toggle");
+      const clear = byId("binary-clear");
+      toggle.hidden = view !== "live";
+      clear.hidden = view !== "live";
+      toggle.textContent = ledgerState.enabled ? "暂停跟踪" : "开始跟踪";
+      toggle.disabled = busy || !ledgerLoaded || ledgerError || (!ledgerState.enabled && context.dataMode !== "live");
+      clear.disabled = busy || !ledgerLoaded || ledgerState.rows.length === 0;
+      byId("binary-record-title").textContent = view === "live" ? "开奖前保存的实时记录" : "逐期回测记录";
+      byId("binary-comparison").hidden = view !== "replay";
+      byId("binary-context").textContent = view === "replay"
+        ? `逐期使用当时已知的历史生成预测。最近 ${settings.window} 个目标期中，实际可评估 ${rows.length} 期；缺期后重新积累 ${settings.lookback + 1} 期。`
+        : `仅统计最近 ${rows.length} 条事前记录。大小和单双按各期保存的固定金额、含本金倍数结算；参数修改不重算旧记录。`;
+      const status = byId("binary-status");
+      if (view === "replay") {
+        status.textContent = historyFlight ? "正在补齐回测历史…" : rows.length ? `已回测 ${rows.length} 期 · 观望不产生投入` : `至少需要 ${settings.lookback + 2} 期连续开奖才能核验首期预测`;
+        status.dataset.state = rows.length ? "ready" : "partial";
+      } else {
+        status.textContent = ledgerError ? "本地账本暂不可用 · 请检查浏览器存储后重试" : !ledgerLoaded ? "正在读取本地账本…" : clearing ? "正在清空账本…" : notice || (context.dataMode !== "live" ? "连接真实开奖后可实时模拟" : !feedStatus.enabled ? "实时数据已暂停 · 不新增预测" : feedStatus.state === "stale" ? "数据暂不可用 · 暂停新增预测" : !ledgerState.enabled ? "实时模拟已暂停" : liveMessage || "正在等待接口确认下一期");
+        status.dataset.state = ledgerError || feedStatus.state === "stale" ? "stale" : "ready";
+      }
+      renderPredictions();
+      renderStatistics(stats);
+      renderComparisons();
+      renderRecords(rows);
+      if (view === "replay") extendHistory();
+    }
+
+    function abortRecovery() {
+      for (const attempt of recoveryAttempts.values()) attempt.request?.abort();
+      recoveryAttempts.clear();
+    }
+
+    function abortRequests() {
+      historyFlight?.abort();
+      historyFlight = null;
+      historyAttempt = null;
+      abortRecovery();
+    }
+
+    function enqueue(action) {
+      ledgerQueue = ledgerQueue.then(async () => {
+        if (closed) return;
+        try {
+          await action();
+          if (closed) return;
+          ledgerState = await ledger.read();
+          if (closed) return;
+          if (ledgerState.rows.length) notice = "";
+          ledgerLoaded = true;
+          ledgerError = false;
+        } catch {
+          ledgerError = true;
+        }
+        render();
+      });
+      return ledgerQueue;
+    }
+
+    function snapshotIsCurrent(snapshot, expectedVersion) {
+      return !closed && !sourcePaused && snapshot && expectedVersion === version && context?.dataMode === "live" && feedStatus.enabled && feedStatus.state !== "stale"
+        && !document.hidden && snapshot === lastSnapshot && Date.now() - snapshot.receivedAt <= 20000;
+    }
+
+    function upcomingTarget(snapshot, expectedVersion) {
+      if (!snapshotIsCurrent(snapshot, expectedVersion)) return null;
+      const latest = context.draws.at(-1);
+      const snapshotLatest = snapshot.draws?.at(-1);
+      if (!latest || latest.id !== snapshotLatest?.id || !/^\d+$/.test(snapshot.targetIssue)
+        || !Number.isFinite(snapshot.scheduledAt) || !Number.isFinite(snapshot.serverTime)
+        || snapshot.scheduledAt <= Date.now() || snapshot.serverTime >= snapshot.scheduledAt) return null;
+      const valid = feed.isNextIssue ? feed.isNextIssue(latest, snapshot) : BigInt(snapshot.targetIssue) === BigInt(latest.id) + 1n;
+      return valid ? snapshot.targetIssue : null;
+    }
+
+    function recoverPending(rows, knownDraws) {
+      if (closed || !feed.getDrawsOn || !knownDraws.length) return;
+      const known = new Set(knownDraws.map((draw) => draw.id));
+      const latest = knownDraws.at(-1);
+      for (const row of rows) {
+        if (row.status !== "pending" || known.has(row.issue) || compareIssues(row.issue, latest.id) >= 0 || !Number.isFinite(row.scheduledAt)) continue;
+        const day = feed.issueDate?.(row.issue) ?? drawDay(row.scheduledAt);
+        const previous = recoveryAttempts.get(day);
+        if (previous?.request || (previous && Date.now() - previous.time < 60000)) continue;
+        const request = new AbortController();
+        const attempt = { time: Date.now(), request };
+        recoveryAttempts.set(day, attempt);
+        const expectedVersion = version;
+        feed.getDrawsOn(day, request.signal).then((draws) => {
+          if (closed || request.signal.aborted || expectedVersion !== version || context?.dataMode !== "live") return;
+          enqueue(async () => {
+            if (closed || request.signal.aborted || expectedVersion !== version || context?.dataMode !== "live") return;
+            await ledger.settle(draws);
+            if (lastSnapshot && snapshotIsCurrent(lastSnapshot, expectedVersion)) await processSnapshot(lastSnapshot, expectedVersion);
+          });
+        }).catch(() => {
+          // Keep pending records intact while the history provider recovers.
+        }).finally(() => { attempt.request = null; });
+      }
+    }
+
+    async function processSnapshot(snapshot, expectedVersion) {
+      if (closed || expectedVersion !== version || context?.dataMode !== "live") return;
+      await ledger.settle(snapshot.draws);
+      if (closed || expectedVersion !== version || context?.dataMode !== "live") return;
+      const fresh = await ledger.read();
+      if (closed || expectedVersion !== version || context?.dataMode !== "live") return;
+      recoverPending(fresh.rows, snapshot.draws);
+      if (!fresh.enabled || !snapshotIsCurrent(snapshot, expectedVersion)) return;
+      const targetIssue = upcomingTarget(snapshot, expectedVersion);
+      if (!targetIssue) {
+        liveMessage = "等待接口确认有效的下一期期号和开奖时间";
+        return;
+      }
+      if (fresh.clearedThrough && compareIssues(targetIssue, fresh.clearedThrough) <= 0) {
+        liveMessage = `已清空至第 ${fresh.clearedThrough} 期 · 等待下一期`;
+        return;
+      }
+      const existing = fresh.rows.find((row) => row.issue === targetIssue);
+      if (existing) {
+        liveMessage = `第 ${targetIssue} 期预测已保存 · 不随参数修改而变化`;
+        return;
+      }
+      const pending = fresh.rows.find((row) => row.status === "pending" && compareIssues(row.issue, targetIssue) < 0);
+      if (pending) {
+        liveMessage = `正在补齐第 ${pending.issue} 期实际结果 · 已保存预测保持不变`;
+        return;
+      }
+      const latestId = snapshot.draws.at(-1)?.id;
+      const known = context.draws.filter((draw) => compareIssues(draw.id, latestId) <= 0);
+      const plan = engine.createPlan(known, settings, { id: targetIssue, drawTime: drawTime(snapshot.scheduledAt) });
+      if (!plan) {
+        liveMessage = "连续历史不足 · 等待更多开奖";
+        return;
+      }
+      if (!snapshotIsCurrent(snapshot, expectedVersion)) return;
+      const result = await ledger.record(plan, { scheduledAt: snapshot.scheduledAt, previousIssue: fresh.rows.at(-1)?.issue ?? null });
+      liveMessage = result ? `第 ${targetIssue} 期已保存 ${result.bets} 注 · 投入 ${money(result.cost)} 元，等待开奖` : "目标期已过期或状态已改变 · 等待下一次确认";
+    }
+
+    function extendHistory() {
+      if (closed || context?.dataMode !== "live" || !history.length || historyFlight || !feed.extendHistory) return;
+      const required = settings.lookback + settings.window + 1;
+      if (history.length >= required) return;
+      if (historyAttempt?.required === required && Date.now() - historyAttempt.time < 60000) return;
+      const request = new AbortController();
+      historyFlight = request;
+      historyAttempt = { required, time: Date.now() };
+      const anchor = history;
+      const expectedVersion = version;
+      feed.extendHistory(anchor, required, request.signal).then((extended) => {
+        if (closed || historyFlight !== request || request.signal.aborted || expectedVersion !== version || context.dataMode !== "live" || !extended.length) return;
+        const latest = context.draws.at(-1)?.id;
+        history = feed.mergeDraws(extended, history).filter((draw) => compareIssues(draw.id, latest) <= 0).slice(-1200);
+        memo = null;
+      }).catch(() => {
+        // Existing data remains usable if the optional history request fails.
+      }).finally(() => {
+        if (!closed && historyFlight === request) {
+          historyFlight = null;
+          render();
+        }
+      });
+    }
+
+    function applySettings(event) {
+      event.preventDefault();
+      if (!isActive()) return;
+      const error = byId("binary-settings-error");
+      try {
+        const next = {
+          lookback: byId("binary-lookback").valueAsNumber,
+          threshold: byId("binary-threshold").valueAsNumber,
+          window: Number(byId("binary-window").value),
+        };
+        for (const play of engine.plays) next[play] = {
+          strategy: byId(`binary-${play}-strategy`).value,
+          stake: byId(`binary-${play}-stake`).valueAsNumber,
+          odds: byId(`binary-${play}-odds`).valueAsNumber,
+        };
+        settings = engine.validateSettings(next);
+        try { localStorage.setItem(settingsKey, JSON.stringify(settings)); } catch { /* Settings still apply for this session. */ }
+        memo = null;
+        shown = 20;
+        error.hidden = true;
+        notice = "";
+        // Never rebuild a saved period. The next snapshot will use new settings only for a new plan.
+        if (lastSnapshot && snapshotIsCurrent(lastSnapshot, version)) {
+          const snapshot = lastSnapshot;
+          const expectedVersion = version;
+          enqueue(() => processSnapshot(snapshot, expectedVersion));
+        }
+        render();
+      } catch (failure) {
+        error.textContent = failure.message;
+        error.hidden = false;
+      }
+    }
+
+    function selectView(mode) {
+      if (!isActive()) return;
+      if (mode && mode !== view) {
+        view = mode;
+        shown = 20;
+        render();
+      }
+    }
+
+    function toggleTracking() {
+      if (!isActive() || busy || !ledgerLoaded) return;
+      const enabled = !ledgerState.enabled;
+      if (!enabled) version++;
+      const expectedVersion = version;
+      busy = true;
+      notice = "";
+      render();
+      return enqueue(async () => {
+        await ledger.setEnabled(enabled);
+        if (closed) return;
+        if (enabled && lastSnapshot && snapshotIsCurrent(lastSnapshot, expectedVersion)) await processSnapshot(lastSnapshot, expectedVersion);
+      }).finally(() => { busy = false; render(); });
+    }
+
+    function clearLedger() {
+      if (!isActive() || busy) return;
+      const currentTarget = upcomingTarget(lastSnapshot, version);
+      const throughIssue = currentTarget && (!latestConfirmedTarget || compareIssues(currentTarget, latestConfirmedTarget) > 0) ? currentTarget : latestConfirmedTarget;
+      version++;
+      lastSnapshot = null;
+      abortRecovery();
+      busy = true;
+      clearing = true;
+      notice = "";
+      render();
+      return enqueue(async () => {
+        await ledger.clear(throughIssue);
+        if (closed) return;
+        shown = 20;
+        liveMessage = "";
+        notice = "实时账本已清空 · 已清空的目标期不会重新录入";
+      }).finally(() => { busy = false; clearing = false; render(); });
+    }
+
+    function visibilityChanged() {
+      if (closed) return;
+      if (document.hidden) {
+        version++;
+        lastSnapshot = null;
+        abortRequests();
+      }
+    }
+
+    enqueue(async () => {});
+
+    return {
+      update(next) {
+        if (closed) return;
+        const prior = context;
+        context = { draws: next.draws, dataMode: next.dataMode };
+        if (next.dataMode === "live") sourcePaused = false;
+        const changedSource = prior && prior.dataMode !== next.dataMode;
+        if (changedSource) {
+          version++;
+          lastSnapshot = null;
+          historyFlight?.abort();
+          historyFlight = null;
+          historyAttempt = null;
+          abortRecovery();
+          if (prior.dataMode === "live" && next.dataMode !== "live") enqueue(() => ledger.setEnabled(false));
+        }
+        if (!prior || prior.draws !== next.draws || changedSource) {
+          history = next.dataMode === "live" && prior?.dataMode === "live" ? feed.mergeDraws(history, next.draws).slice(-1200) : next.draws;
+          memo = null;
+        }
+        render();
+      },
+      onSnapshot(snapshot) {
+        if (closed || sourcePaused || context?.dataMode !== "live") return;
+        const latest = snapshot.draws?.at(-1);
+        if (latest && /^\d+$/.test(snapshot.targetIssue) && Number.isFinite(snapshot.scheduledAt)
+          && Number.isFinite(snapshot.serverTime) && snapshot.serverTime < snapshot.scheduledAt
+          && (feed.isNextIssue ? feed.isNextIssue(latest, snapshot) : BigInt(snapshot.targetIssue) === BigInt(latest.id) + 1n)
+          && (!latestConfirmedTarget || compareIssues(snapshot.targetIssue, latestConfirmedTarget) > 0)) {
+          // A remembered target is only a clear watermark, never authority to record.
+          latestConfirmedTarget = snapshot.targetIssue;
+        }
+        lastSnapshot = { ...snapshot, receivedAt: Date.now() };
+        const received = lastSnapshot;
+        const expectedVersion = version;
+        return enqueue(() => processSnapshot(received, expectedVersion));
+      },
+      setFeedStatus(status) {
+        if (closed) return;
+        const wasStale = feedStatus.state === "stale";
+        feedStatus = status;
+        if (!status.enabled) {
+          version++;
+          lastSnapshot = null;
+          liveMessage = "";
+          abortRecovery();
+        } else if (wasStale && status.state !== "stale" && lastSnapshot && snapshotIsCurrent(lastSnapshot, version)) {
+          const snapshot = lastSnapshot;
+          const expectedVersion = version;
+          enqueue(() => processSnapshot(snapshot, expectedVersion));
+        }
+        render();
+      },
+      pauseForSource() {
+        if (closed) return disposal ?? Promise.resolve();
+        sourcePaused = true;
+        version++;
+        lastSnapshot = null;
+        liveMessage = "";
+        notice = "";
+        abortRequests();
+        return enqueue(() => ledger.setEnabled(false));
+      },
+      dispose() {
+        if (disposal) return disposal;
+        closed = true;
+        sourcePaused = true;
+        version++;
+        lastSnapshot = null;
+        abortRequests();
+        // Drain an already-started transaction, then durably pause this book.
+        disposal = ledgerQueue.then(() => ledger.setEnabled(false));
+        return disposal;
+      },
+      ui: {
+        get closed() { return closed; },
+        applySettings, selectView, renderComparisons, toggleTracking, clearLedger, visibilityChanged,
+        showMore() { if (isActive()) { shown += 20; render(); } },
+        activate() {
+          if (closed) return;
+          panel.hidden = false;
+          panel.dataset.game = id;
+          showSettings();
+          byId("binary-settings-error").hidden = true;
+          const description = byId("binary-game-description");
+          if (description) description.textContent = `${game.label ?? id} · ${format.positions} 个位置分别分析，两种玩法独立模拟`;
+          const ruleTag = byId("binary-rules");
+          if (ruleTag) {
+            const smallMax = Math.floor((format.min + format.max) / 2);
+            ruleTag.textContent = `${format.min}—${smallMax} 小 · ${smallMax + 1}—${format.max} 大 · 奇数单 · 偶数双`;
+          }
+          const positionTitle = byId("binary-position-title");
+          if (positionTitle) positionTitle.textContent = `查看 ${format.positions} 个位置的统计`;
+          for (const [strategy, item] of comparisonPositions) {
+            item.details.firstChild.textContent = `${strategyNames[strategy]} · 查看 ${format.positions} 个位置的大小、单双结果`;
+          }
+          render();
+        },
+      },
+    };
+  }
+
+  let sharedManager;
+
+  function create(options = {}) {
+    if (!sharedManager) {
+      const controllers = new Map();
+      const comparisonPositions = new Map();
+      let activeId = null;
+      let pendingClear = null;
+      const panel = byId("binary-panel");
+      const clearDialog = byId("binary-clear-dialog");
+      const active = () => controllers.get(activeId);
+      const internal = { comparisonPositions, isActive: (id) => activeId === id };
+
+      for (const strategy of globalThis.TrackBinary.strategies) {
+        const details = node("details", "binary-details");
+        details.id = `binary-compare-position-${strategy}`;
+        details.append(node("summary", "", `${strategyNames[strategy]} · 查看各位置的大小、单双结果`));
+        comparisonPositions.set(strategy, { details, stats: null, body: null });
+        byId("binary-comparison-positions").append(details);
+        details.addEventListener("toggle", () => active()?.ui.renderComparisons());
+      }
+
+      function closeClearDialog() {
+        pendingClear = null;
+        if (clearDialog.open) clearDialog.close();
+      }
+
+      function resetDetails() {
+        byId("binary-comparison").open = false;
+        const positions = byId("binary-position-details");
+        if (positions) positions.open = false;
+        byId("binary-comparison-rows").replaceChildren();
+        byId("binary-rows").replaceChildren();
+        for (const item of comparisonPositions.values()) {
+          item.details.open = false;
+          item.stats = null;
+          item.body?.replaceChildren();
+        }
+      }
+
+      function selectGame(id) {
+        const next = controllers.get(id);
+        const selected = next && !next.ui.closed ? id : null;
+        if (activeId !== selected) {
+          closeClearDialog();
+          resetDetails();
+        }
+        activeId = selected;
+        panel.hidden = selected === null;
+        if (selected !== null) next.ui.activate();
+        else delete panel.dataset.game;
+      }
+
+      function forGame({ id, game, engine = globalThis.TrackBinary, feed, ledger }) {
+        if (typeof id !== "string" || !/^[a-z][a-z0-9-]*$/.test(id) || !feed || !ledger) throw new Error("预测盘口配置无效。");
+        if (controllers.has(id)) {
+          const existing = controllers.get(id);
+          if (existing.ui.closed) throw new Error("盘口正在关闭，请等待关闭完成后重新打开。");
+          return existing;
+        }
+        const controller = createController(internal, { id, game: game ?? { label: id, format: engine.format }, engine, feed, ledger });
+        controllers.set(id, controller);
+        return controller;
+      }
+
+      async function removeGame(id) {
+        const controller = controllers.get(id);
+        if (!controller) return;
+        if (activeId === id) selectGame(null);
+        try {
+          await controller.dispose();
+        } finally {
+          if (controllers.get(id) === controller) controllers.delete(id);
+        }
+      }
+
+      byId("binary-settings-form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        active()?.ui.applySettings(event);
+      });
+      byId("binary-mode").addEventListener("click", (event) => {
+        const mode = event.target.closest("[data-binary-mode]")?.dataset.binaryMode;
+        if (mode) active()?.ui.selectView(mode);
+      });
+      byId("binary-more").addEventListener("click", () => active()?.ui.showMore());
+      byId("binary-comparison").addEventListener("toggle", () => active()?.ui.renderComparisons());
+      byId("binary-toggle").addEventListener("click", () => active()?.ui.toggleTracking());
+      byId("binary-clear").addEventListener("click", () => {
+        const controller = active();
+        if (!controller || controller.ui.closed) return;
+        pendingClear = controller;
+        clearDialog.showModal();
+      });
+      byId("binary-clear-cancel").addEventListener("click", closeClearDialog);
+      clearDialog.addEventListener("cancel", () => { pendingClear = null; });
+      byId("binary-clear-confirm").addEventListener("click", () => {
+        const target = pendingClear;
+        closeClearDialog();
+        if (target && target === active() && !target.ui.closed) target.ui.clearLedger();
+      });
+      document.addEventListener("visibilitychange", () => {
+        for (const controller of controllers.values()) controller.ui.visibilityChanged();
+      });
+
+      sharedManager = { forGame, selectGame, removeGame };
+      // Preserve the original speed-only entry points for integrations using create({ feed }).
+      for (const method of ["update", "onSnapshot", "setFeedStatus", "pauseForSource", "dispose"]) {
+        sharedManager[method] = (...args) => controllers.get("speed")?.[method](...args);
+      }
+      panel.hidden = true;
+    }
+    if (options.feed) {
+      sharedManager.forGame({
+        id: "speed",
+        game: options.game ?? { label: "极速赛车", format: globalThis.TrackBinary.format },
+        engine: options.engine ?? globalThis.TrackBinary,
+        feed: options.feed,
+        ledger: options.ledger ?? globalThis.TrackBinaryLedger,
+      });
+      sharedManager.selectGame("speed");
+    }
+    return sharedManager;
+  }
+
+  globalThis.TrackBinaryUI = { create };
 })();
 </script>
   <script>(function () {
@@ -2717,19 +4313,22 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
   let sharedSettings = loadSettings();
   const workspace = loadWorkspace();
   const sessions = new Map();
+  const closingGames = new Map();
   let selectedId = workspace.selected;
   let activeTracking = null;
   let focusReturn = null;
   let importAttempt = 0;
 
   const combos = globalThis.TrackComboUI.create();
+  const binaries = globalThis.TrackBinaryUI.create();
 
   function current() {
     return sessions.get(selectedId);
   }
 
-  function updateCombo({ combo, draws, dataMode, settings }) {
+  function updateSessionViews({ combo, binary, draws, dataMode, settings }) {
     combo.update({ draws, dataMode, settings });
+    binary?.update({ draws, dataMode });
   }
 
   function readStorage(key) {
@@ -2751,12 +4350,12 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
   function loadWorkspace() {
     const saved = readStorage(gamesKey);
     const added = Array.isArray(saved?.added) ? saved.added.filter((id) => games.get(id)?.available) : [];
-    const ids = [...new Set([games.defaultGame.id, ...added])];
-    const odds = Object.fromEntries(ids.flatMap((id) => {
+    const ids = [...new Set(saved?.version === 2 ? added : [games.defaultGame.id, ...added, "lucky10"])];
+    const odds = Object.fromEntries(games.presets.flatMap(({ id }) => {
       const value = saved?.odds?.[id];
       return Number.isFinite(value) && value >= 0.01 && value <= 10000 ? [[id, value]] : [];
     }));
-    return { added: ids, selected: ids.includes(saved?.selected) ? saved.selected : games.defaultGame.id, odds };
+    return { version: 2, added: ids, selected: ids.includes(saved?.selected) ? saved.selected : ids[0] ?? null, odds };
   }
 
   function settingsFor(game) {
@@ -2787,32 +4386,42 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
     const feed = globalThis.TrackLiveController.forGame(game);
     const ledger = globalThis.TrackComboLedger.forGame(game.id, engine);
     const combo = combos.forGame({ id: game.id, engine, feed, ledger });
+    const binaryEngine = globalThis.TrackBinary.forFormat(game.format);
+    const binary = binaries.forGame({ id: game.id, game, engine: binaryEngine, feed,
+      ledger: globalThis.TrackBinaryLedger.forGame(game.id, binaryEngine) });
     const cached = loadCachedDraws(game, engine);
     const sample = cached.length === 0 && game.id === games.defaultGame.id;
     const draws = sample ? engine.sampleData() : cached;
     const settings = settingsFor(game);
     const session = {
-      game, engine, combo, draws, settings, analysis: engine.analyze(draws, settings),
+      game, engine, combo, binary, draws, settings, closed: false, analysis: engine.analyze(draws, settings),
       dataMode: sample ? "sample" : cached.length ? "cache" : "loading",
       feedStatus: { state: "connecting", message: "正在加载开奖数据…", enabled: true },
     };
     session.live = feed.create({
       initialDraws: cached,
       onData(nextDraws) {
+        if (session.closed || sessions.get(game.id) !== session) return;
+        const latestIssue = session.draws.at(-1)?.id;
+        if (session.dataMode === "cache" && BigInt(nextDraws.at(-1).id) < BigInt(latestIssue)) return;
         writeStorage(`${gamesKey}-draws-${game.id}`, nextDraws);
         replaceDataset(session, nextDraws, "live");
       },
       onLatest(snapshot) {
+        if (session.closed || sessions.get(game.id) !== session) return;
         combo.onSnapshot(snapshot);
+        binary?.onSnapshot(snapshot);
       },
       onStatus(status) {
+        if (session.closed || sessions.get(game.id) !== session) return;
         session.feedStatus = status;
         combo.setFeedStatus(status);
+        binary?.setFeedStatus(status);
         if (current() === session) renderLiveStatus(session);
       },
     });
     sessions.set(game.id, session);
-    updateCombo(session);
+    updateSessionViews(session);
     return session;
   }
 
@@ -2891,6 +4500,7 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
   }
 
   function renderDataset() {
+    if (!current()) return;
     const { game, draws, dataMode } = current();
     const latest = draws.at(-1);
     byId("data-count").textContent = formatNumber.format(draws.length);
@@ -3013,6 +4623,7 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
   }
 
   function renderDetail() {
+    if (!current()) { detailPanel.hidden = true; return; }
     const { analysis } = current();
     const mapping = analysis.mappings.find((item) => item.d === activeTracking);
     detailPanel.hidden = !mapping;
@@ -3035,6 +4646,7 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
   }
 
   function renderAnalysis() {
+    if (!current()) return;
     const { analysis, settings } = current();
     renderWindows();
     renderRoi(analysis.windows[settings.window], new Set(analysis.roiQualified));
@@ -3044,6 +4656,7 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
 
   function applySettings(nextSettings) {
     const selected = current();
+    if (!selected) return;
     selected.engine.analyze(selected.draws, nextSettings);
     if (selectedId !== games.defaultGame.id) workspace.odds[selectedId] = nextSettings.odds;
     sharedSettings = selectedId === games.defaultGame.id ? nextSettings : { ...nextSettings, odds: sharedSettings.odds };
@@ -3052,16 +4665,17 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
     for (const session of sessions.values()) {
       session.settings = settingsFor(session.game);
       session.analysis = session.engine.analyze(session.draws, session.settings);
-      updateCombo(session);
+      updateSessionViews(session);
     }
     renderAnalysis();
   }
 
   function replaceDataset(session, nextDraws, nextMode) {
+    if (session.closed || sessions.get(session.game.id) !== session) return;
     session.analysis = session.engine.analyze(nextDraws, session.settings);
     session.draws = nextDraws;
     session.dataMode = nextMode;
-    updateCombo(session);
+    updateSessionViews(session);
     if (session !== current()) return;
     const focusedTracking = document.activeElement?.dataset.track;
     const focusedContainer = document.activeElement?.closest("#roi-rows, #map-rows");
@@ -3079,6 +4693,7 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
 
   settingsForm.addEventListener("submit", (event) => {
     event.preventDefault();
+    if (!current()) return;
     const nextSettings = Object.fromEntries(Object.entries(editableSettings).map(([field, id]) => {
       const input = byId(id);
       return [field, field === "thresholdMax" && input.value === "" ? null : input.valueAsNumber];
@@ -3095,6 +4710,7 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
   comboMaxCostInput.addEventListener("input", syncCapActionControl);
   byId("combo-stake-form").addEventListener("submit", (event) => {
     event.preventDefault();
+    if (!current()) return;
     const error = byId("combo-stake-error");
     try {
       applySettings({
@@ -3113,7 +4729,7 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
 
   windowTabs.addEventListener("click", (event) => {
     const button = event.target.closest("[data-window]");
-    if (button) applySettings({ ...current().settings, window: Number(button.dataset.window) });
+    if (button && current()) applySettings({ ...current().settings, window: Number(button.dataset.window) });
   });
 
   windowTabs.addEventListener("keydown", (event) => {
@@ -3146,6 +4762,7 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
 
   for (const container of [byId("roi-rows"), byId("map-rows")]) {
     container.addEventListener("click", (event) => {
+      if (!current()) return;
       const button = event.target.closest("[data-track]");
       if (!button) return;
       const tracking = Number(button.dataset.track);
@@ -3175,64 +4792,123 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
 
   function renderGames() {
     gameList.replaceChildren(...workspace.added.map((id) => {
-      const button = node("button", "", games.get(id).label);
+      const label = games.get(id).label;
+      const item = node("div", "game-tab");
+      const close = node("button", "game-close", "×");
+      close.type = "button";
+      close.dataset.closeGame = id;
+      close.setAttribute("aria-label", `关闭${label}`);
+      close.title = `关闭${label}，停止采集和模拟跟踪`;
+      const button = node("button", "game-select", label);
       button.type = "button";
       button.dataset.game = id;
       button.setAttribute("aria-pressed", String(selectedId === id));
-      return button;
+      item.append(close, button);
+      return item;
     }));
   }
 
   function selectGame(id, moveFocus = false) {
     const session = sessions.get(id);
-    if (!session) return;
-    selectedId = id;
-    workspace.selected = id;
+    if (!session && id != null) return;
+    selectedId = session ? id : null;
+    workspace.selected = selectedId;
     activeTracking = null;
     focusReturn = null;
     writeStorage(gamesKey, workspace);
-    displaySettings(session.settings);
-    byId("page-title").textContent = session.game.label;
+    byId("game-workspace").hidden = !session;
+    byId("game-empty").hidden = Boolean(session);
+    liveToggle.disabled = !session;
+    byId("import-open").disabled = !session;
     setError(byId("settings-error"));
     renderGames();
+    combos.selectGame(selectedId);
+    binaries.selectGame(selectedId);
+    if (!session) {
+      byId("sample-tag").hidden = true;
+      if (moveFocus) byId("game-add").focus();
+      return;
+    }
+    displaySettings(session.settings);
+    byId("page-title").textContent = session.game.label;
     renderDataset();
     renderAnalysis();
     renderLiveStatus(session);
-    combos.selectGame(id);
     if (moveFocus) gameList.querySelector('[aria-pressed="true"]')?.focus({ preventScroll: true });
   }
 
   gameList.addEventListener("click", (event) => {
+    const close = event.target.closest("[data-close-game]");
+    if (close) { closeGame(close.dataset.closeGame); return; }
     const button = event.target.closest("[data-game]");
-    if (button?.dataset.game !== selectedId) selectGame(button?.dataset.game, true);
+    if (button && button.dataset.game !== selectedId) selectGame(button.dataset.game, true);
   });
 
-  byId("game-add").addEventListener("click", () => {
-    gamePresets.replaceChildren(...games.presets.filter((game) => game.id !== games.defaultGame.id).map((game) => {
+  function renderPresets() {
+    gamePresets.replaceChildren(...games.presets.map((game) => {
       const added = sessions.has(game.id);
+      const closing = closingGames.has(game.id);
       const button = node("button", "game-preset");
       button.type = "button";
       button.dataset.preset = game.id;
-      button.disabled = added || !game.available;
-      const description = added ? "已添加" : game.available ? `${game.format.positions} 位开奖` : "数据源待核验";
+      button.disabled = added || closing || !game.available;
+      const description = closing ? "正在关闭…" : added ? "已添加" : game.available ? `${game.format.positions} 位开奖 · 大小／单双` : "数据源待核验";
       button.append(node("strong", "", game.label), node("span", "", description));
       return button;
     }));
+  }
+
+  function closeGame(id) {
+    const session = sessions.get(id);
+    if (!session || session.closed) return;
+    const index = workspace.added.indexOf(id);
+    const wasSelected = selectedId === id;
+    session.closed = true;
+    session.live.pause("盘口已关闭");
+    sessions.delete(id);
+    workspace.added = workspace.added.filter((entry) => entry !== id);
+    importAttempt++;
+    if (importDialog.open) importDialog.close();
+    const closing = Promise.allSettled([combos.removeGame(id), binaries.removeGame(id)]).finally(() => {
+      closingGames.delete(id);
+      if (gameDialog.open) renderPresets();
+    });
+    closingGames.set(id, closing);
+    if (wasSelected) selectGame(workspace.added[index] ?? workspace.added[index - 1] ?? null, true);
+    else { writeStorage(gamesKey, workspace); renderGames(); }
+    if (gameDialog.open) renderPresets();
+  }
+
+  function openGameDialog() {
+    renderPresets();
     gameDialog.showModal();
-  });
+  }
+  byId("game-add").addEventListener("click", openGameDialog);
+  byId("game-empty-add").addEventListener("click", openGameDialog);
   byId("game-add-cancel").addEventListener("click", () => gameDialog.close());
-  gamePresets.addEventListener("click", (event) => {
+  gamePresets.addEventListener("click", async (event) => {
     const id = event.target.closest("[data-preset]")?.dataset.preset;
     const game = games.get(id);
+    if (closingGames.has(id)) await closingGames.get(id);
     if (!game?.available || sessions.has(id)) return;
     const session = createSession(game);
     workspace.added.push(id);
     gameDialog.close();
     selectGame(id, true);
-    session.live.start();
+    try {
+      // Explicitly reopening a closed window resumes data, never a previous tracking flag.
+      await Promise.all([session.combo.pauseForSource(), session.binary.pauseForSource()]);
+      if (!session.closed && sessions.get(id) === session) session.live.start();
+    } catch {
+      if (!session.closed && current() === session) {
+        session.feedStatus = { state: "stale", enabled: false, message: "无法保存模拟暂停状态 · 请重新添加盘口后重试" };
+        renderLiveStatus(session);
+      }
+    }
   });
 
   byId("import-open").addEventListener("click", () => {
+    if (!current()) return;
     const { game } = current();
     const { positions, min, unique } = game.format;
     byId("import-description").textContent = `${game.label} · 每行填期号和 ${positions} 个位置的号码。`;
@@ -3256,6 +4932,7 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
     event.preventDefault();
     const attempt = ++importAttempt;
     const session = current();
+    if (!session) return;
     const file = importFile.files[0];
     setError(importError);
     try {
@@ -3264,6 +4941,7 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
       if (!csv.trim()) throw new Error("请先选择 CSV 文件或粘贴开奖数据。");
       const imported = session.engine.parseCsv(csv);
       session.combo.pauseForSource();
+      session.binary?.pauseForSource();
       session.live.pause("正在查看导入数据 · 实时更新已暂停");
       replaceDataset(session, imported, "csv");
       importDialog.close();
@@ -3274,6 +4952,7 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
 
   byId("sample-download").addEventListener("click", (event) => {
     event.preventDefault();
+    if (!current()) return;
     const { game, engine } = current();
     const csv = new Blob(["\uFEFF", engine.toCsv(engine.sampleData())], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(csv);
@@ -3289,7 +4968,9 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
   byId("sample-reset").addEventListener("click", (event) => {
     event.preventDefault();
     const session = current();
+    if (!session) return;
     session.combo.pauseForSource();
+    session.binary?.pauseForSource();
     session.live.pause("正在查看演示数据 · 实时更新已暂停");
     replaceDataset(session, session.engine.sampleData(), "sample");
     if (importDialog.open) {
@@ -3299,6 +4980,7 @@ textarea { resize: vertical; padding: 10px; border: 1px solid #415660; border-ra
   });
 
   liveToggle.addEventListener("click", () => {
+    if (!current()) return;
     const { live } = current();
     if (live.enabled) live.pause();
     else live.start();
